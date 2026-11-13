@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DRFISHY // Official Links</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #07090f;
+      --card-base: rgba(18, 22, 33, 0.72);
+      --text-primary: #ffffff;
+      --text-secondary: #94a3b8;
+      --kick-green: #53fc18;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Heebo', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      background-image: 
+        radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.08) 0%, transparent 55%),
+        radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.05) 0%, transparent 45%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 45px 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* אור לבן עדין שעוקב אחרי העכבר */
+    .mouse-glow {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.07) 0%, rgba(56, 189, 248, 0.03) 40%, transparent 70%);
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      z-index: 2;
+      transition: width 0.3s, height 0.3s;
+    }
+
+    /* שכבת כוכבים מנצנצים ברקע */
+    .stars-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .star {
+      position: absolute;
+      background: #ffffff;
+      border-radius: 50%;
+      animation: twinkle var(--duration) ease-in-out infinite;
+      animation-delay: var(--delay);
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.1; transform: scale(0.8); }
+      50% { opacity: 0.85; transform: scale(1.2); box-shadow: 0 0 6px rgba(255, 255, 255, 0.8); }
+    }
+
+    /* שכבת הפנים המרחפות ברקע */
+    .floating-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    /* פנים ענקיות שקופות במרכז הרקע */
+    .hero-bg-face {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: clamp(280px, 45vw, 520px);
+      opacity: 0.1;
+      mix-blend-mode: lighten;
+      pointer-events: none;
+      z-index: 1;
+      animation: slowPulse 7s ease-in-out infinite;
+    }
+
+    @keyframes slowPulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50% { transform: translate(-50%, -52%) scale(1.04); }
+    }
+
+    /* פנים קטנות מרחפות */
+    .mini-face {
+      position: absolute;
+      bottom: -100px;
+      mix-blend-mode: lighten;
+      user-select: none;
+      animation: floatUp linear infinite;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+      15% { opacity: var(--max-opacity); }
+      85% { opacity: var(--max-opacity); }
+      100% { transform: translateY(-115vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* תוכן האתר הראשי מעל הרקע */
+    .container {
+      max-width: 560px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* אזור פרופיל */
+    .profile {
+      text-align: center;
+      margin-bottom: 28px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .avatar-wrapper {
+      width: 104px;
+      height: 104px;
+      border-radius: 50%;
+      padding: 3px;
+      background: linear-gradient(135deg, #38bdf8, rgba(255,255,255,0.1));
+      margin: 0 auto 16px;
+      box-shadow: 0 12px 35px rgba(56, 189, 248, 0.25);
+      transition: all 0.4s ease;
+    }
+
+    .avatar-wrapper.is-live {
+      background: linear-gradient(135deg, var(--kick-green), #16a34a);
+      box-shadow: 0 0 28px rgba(83, 252, 24, 0.45);
+    }
+
+    .avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      background: #000;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+      background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .official-subtitle {
+      font-size: 0.82rem;
+      color: #ffffff;
+      font-weight: 700;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    /* התיבה המעוגלת לכותרת הלייב */
+    .stream-title-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      padding: 13px 24px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 16px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      color: #e2e8f0;
+      text-decoration: none;
+      font-size: 0.96rem;
+      font-weight: 700;
+      letter-spacing: 0.01em;
+      transition: all 0.3s ease;
+      margin-bottom: 14px;
+    }
+
+    .stream-title-box:hover {
+      background: rgba(255, 255, 255, 0.07);
+      border-color: rgba(255, 255, 255, 0.4);
+      transform: translateY(-1px);
+    }
+
+    .stream-title-box.is-live {
+      border-color: rgba(83, 252, 24, 0.45);
+      background: rgba(83, 252, 24, 0.05);
+      color: #ffffff;
+      box-shadow: 0 0 20px rgba(83, 252, 24, 0.12);
+    }
+
+    .bio {
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      font-weight: 400;
+      letter-spacing: 0.06em;
+    }
+
+    /* רשימת כרטיסיות */
+    .links-list {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      width: 100%;
+    }
+
+    .link-card {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--card-base);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      padding: 14px 20px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: var(--text-primary);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.4);
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .link-card:hover {
+      transform: translateY(-3px);
+    }
+
+    /* תיבת הלוגו הפנימית המעוגלת */
+    .link-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .link-icon svg {
+      width: 24px;
+      height: 24px;
+      transition: transform 0.3s ease;
+    }
+
+    .link-card:hover .link-icon {
+      transform: scale(1.06);
+    }
+
+    /* Kick */
+    .card-kick {
+      background: linear-gradient(135deg, rgba(83, 252, 24, 0.08) 0%, var(--card-base) 72%);
+      border-color: rgba(83, 252, 24, 0.24);
+    }
+    .card-kick .link-icon {
+      background: rgba(83, 252, 24, 0.11);
+      border-color: rgba(83, 252, 24, 0.26);
+      color: #53fc18;
+    }
+    .card-kick .link-icon svg {
+      width: 30px;
+      height: auto;
+    }
+    .card-kick:hover {
+      border-color: rgba(83, 252, 24, 0.55);
+      box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(83, 252, 24, 0.18);
+    }
+
+    /* YouTube */
+    .card-youtube {
+      background: linear-gradient(135deg, rgba(225, 75, 86, 0.09) 0%, var(--card-base) 72%);
+      border-color: rgba(225, 75, 86, 0.24);
+    }
+    .card-youtube .link-icon {
+      background: rgba(225, 75, 86, 0.12);
+      border-color: rgba(225, 75, 86, 0.26);
+      color: #d9535f;
+    }
+    .card-youtube:hover {
+      border-color: rgba(225, 75, 86, 0.55);
+      box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(225, 75, 86, 0.18);
+    }
+
+    /* Discord */
+    .card-discord {
+      background: linear-gradient(135deg, rgba(108, 132, 212, 0.1) 0%, var(--card-base) 72%);
+      border-color: rgba(108, 132, 212, 0.26);
+    }
+    .card-discord .link-icon {
+      background: rgba(108, 132, 212, 0.13);
+      border-color: rgba(108, 132, 212, 0.28);
+      color: #7289da;
+    }
+    .card-discord:hover {
+      border-color: rgba(108, 132, 212, 0.58);
+      box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(108, 132, 212, 0.2);
+    }
+
+    /* Game2Earn Community - זהב/ענבר */
+    .card-gold {
+      background: linear-gradient(135deg, rgba(212, 155, 84, 0.09) 0%, var(--card-base) 72%);
+      border-color: rgba(212, 155, 84, 0.24);
+    }
+    .card-gold .link-icon {
+      background: rgba(212, 155, 84, 0.12);
+      border-color: rgba(212, 155, 84, 0.26);
+      color: #d49b54;
+    }
+    .card-gold:hover {
+      border-color: rgba(212, 155, 84, 0.55);
+      box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(212, 155, 84, 0.18);
+    }
+
+    /* Instagram */
+    .card-instagram {
+      background: linear-gradient(135deg, rgba(196, 108, 155, 0.09) 0%, var(--card-base) 72%);
+      border-color: rgba(196, 108, 155, 0.24);
+    }
+    .card-instagram .link-icon {
+      background: rgba(196, 108, 155, 0.12);
+      border-color: rgba(196, 108, 155, 0.26);
+      color: #c86d9d;
+    }
+    .card-instagram:hover {
+      border-color: rgba(196, 108, 155, 0.55);
+      box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(196, 108, 155, 0.18);
+    }
+
+    .link-info {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .link-text-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .link-title {
+      font-size: 1.02rem;
+      font-weight: 600;
+    }
+
+    .link-subtitle {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    .link-arrow {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    .link-card:hover .link-arrow {
+      transform: translateX(-5px);
+      color: var(--text-primary);
+    }
+
+    .footer {
+      margin-top: 45px;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.05em;
+      opacity: 0.7;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mouse-glow" id="mouseGlow"></div>
+  <div class="stars-bg" id="starsBg"></div>
+  <img src="face.png" alt="" class="hero-bg-face">
+  <div class="floating-bg" id="floatingBg"></div>
+
+  <div class="container">
+    <header class="profile">
+      <div class="avatar-wrapper" id="avatarWrapper">
+        <img src="logo.png" alt="DRFISHY" class="avatar">
+      </div>
+      <h1>DRFISHY</h1>
+      <p class="official-subtitle">OFFICIAL LINKS</p>
+
+      <a href="https://kick.com/drfishyqw" target="_blank" class="stream-title-box" id="streamTitleBox">
+        <span id="streamTitleText">טוען סטטוס שידור...</span>
+      </a>
+
+      <p class="bio">Creator • Streamer • Community</p>
+    </header>
+
+    <main class="links-list">
+      <!-- KICK -->
+      <a href="https://kick.com/drfishyqw" target="_blank" class="link-card card-kick" id="kickCard">
+        <div class="link-info">
+          <div class="link-icon">
+            <svg viewBox="0 0 933 300" fill="currentColor" aria-hidden="true">
+              <path d="M0 0h100v100h50V50h50V0h100v100h-50v50h-50v50h50v50h50v100H200v-50h-50v-50h-50v100H0V0zm350 0h100v300H350V0zm150 0h250v100H600v100h150v100H500V0zm300 0h100v100h50V50h50V0h100v100h-50v50h-50v50h50v50h50v100H950v-50h-50v-50h-50v100H800V0z" transform="scale(0.848, 1)"/>
+            </svg>
+          </div>
+          <div class="link-text-group">
+            <span class="link-title">Kick Broadcast</span>
+            <span class="link-subtitle" id="kickSubtitle">לערוץ השידורים ב-Kick</span>
+          </div>
+        </div>
+        <div class="link-arrow">←</div>
+      </a>
+
+      <!-- YOUTUBE -->
+      <a href="https://youtube.com" target="_blank" class="link-card card-youtube">
+        <div class="link-info">
+          <div class="link-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+          </div>
+          <div class="link-text-group">
+            <span class="link-title">YouTube Clips</span>
+            <span class="link-subtitle">קטעים נבחרים מהלייבים</span>
+          </div>
+        </div>
+        <div class="link-arrow">←</div>
+      </a>
+
+      <!-- DISCORD -->
+      <a href="https://discord.com" target="_blank" class="link-card card-discord">
+        <div class="link-info">
+          <div class="link-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
+            </svg>
+          </div>
+          <div class="link-text-group">
+            <span class="link-title">Discord Community</span>
+            <span class="link-subtitle">הצטרף לקהילה שלנו</span>
+          </div>
+        </div>
+        <div class="link-arrow">←</div>
+      </a>
+
+      <!-- GAME2EARN COMMUNITY -->
+      <a href="https://discord.gg/QYRdGG52Td" target="_blank" class="link-card card-gold">
+        <div class="link-info">
+          <div class="link-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="2" x2="12" y2="22"></line>
+              <path d="M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+          </div>
+          <div class="link-text-group">
+            <span class="link-title">Game2Earn Community</span>
+            <span class="link-subtitle">היכנסו כדי להרוויח כסף</span>
+          </div>
+        </div>
+        <div class="link-arrow">←</div>
+      </a>
+
+      <!-- INSTAGRAM -->
+      <a href="https://instagram.com" target="_blank" class="link-card card-instagram">
+        <div class="link-info">
+          <div class="link-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </div>
+          <div class="link-text-group">
+            <span class="link-title">Instagram</span>
+            <span class="link-subtitle">עדכונים מאחורי הקלעים</span>
+          </div>
+        </div>
+        <div class="link-arrow">←</div>
+      </a>
+    </main>
+
+    <footer class="footer">
+      © 2026 DRFISHY. All rights reserved.
+    </footer>
+  </div>
+
+  <script>
+    const KICK_USERNAME = 'drfishyqw';
+
+    async function fetchKickChannelData(username) {
+      const targetUrl = `https://kick.com/api/v2/channels/${username}`;
+      const endpoints = [
+        targetUrl,
+        `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`
+      ];
+
+      for (const url of endpoints) {
+        try {
+          const response = await fetch(url);
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data.id) return data;
+          }
+        } catch (e) {}
+      }
+      return null;
+    }
+
+    async function checkKickLiveStatus() {
+      const box = document.getElementById('streamTitleBox');
+      const titleEl = document.getElementById('streamTitleText');
+      const avatarWrapper = document.getElementById('avatarWrapper');
+      const kickSubtitle = document.getElementById('kickSubtitle');
+
+      const data = await fetchKickChannelData(KICK_USERNAME);
+
+      if (data && data.livestream) {
+        titleEl.textContent = data.livestream.session_title || 'בשידור חי עכשיו ב-Kick!';
+        box.classList.add('is-live');
+        avatarWrapper.classList.add('is-live');
+        kickSubtitle.textContent = `בשידור חי עכשיו (${data.livestream.viewer_count} צופים)`;
+      } else {
+        const lastTitle = data?.previous_livestreams?.[0]?.session_title;
+        titleEl.textContent = lastTitle || 'לא בשידור כרגע • לחצו למעבר לערוץ ב-Kick';
+        box.classList.remove('is-live');
+        avatarWrapper.classList.remove('is-live');
+        kickSubtitle.textContent = 'לערוץ השידורים ב-Kick';
+      }
+    }
+
+    checkKickLiveStatus();
+    setInterval(checkKickLiveStatus, 45000);
+
+    // מעקב אחרי תנועת העכבר לתאורה
+    const glow = document.getElementById('mouseGlow');
+    window.addEventListener('mousemove', (e) => {
+      glow.style.left = e.clientX + 'px';
+      glow.style.top = e.clientY + 'px';
+    });
+
+    // יצירת כוכבים מנצנצים ברקע
+    const starsContainer = document.getElementById('starsBg');
+    for (let i = 0; i < 65; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      const size = (Math.random() * 2 + 1).toFixed(1) + 'px';
+      star.style.width = size;
+      star.style.height = size;
+      star.style.top = Math.random() * 100 + 'vh';
+      star.style.left = Math.random() * 100 + 'vw';
+      star.style.setProperty('--duration', (Math.random() * 4 + 3).toFixed(1) + 's');
+      star.style.setProperty('--delay', -(Math.random() * 5).toFixed(1) + 's');
+      starsContainer.appendChild(star);
+    }
+
+    // יצירת פנים קטנות מרחפות ברקע
+    const bgContainer = document.getElementById('floatingBg');
+    for (let i = 0; i < 22; i++) {
+      const img = document.createElement('img');
+      img.src = 'face.png';
+      img.className = 'mini-face';
+      img.style.left = Math.random() * 95 + 'vw';
+      img.style.width = (Math.floor(Math.random() * 35) + 30) + 'px';
+      const duration = Math.random() * 11 + 9;
+      img.style.animationDuration = duration + 's';
+      img.style.animationDelay = -(Math.random() * duration) + 's';
+      img.style.setProperty('--max-opacity', (Math.random() * 0.28 + 0.12).toFixed(2));
+      bgContainer.appendChild(img);
+    }
+  </script>
+
+</body>
+</html>
