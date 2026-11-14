@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DRFISHYQW // Official Links</title>
+  <title>DrFishyQw // Official Links</title>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -12,6 +12,10 @@
       --text-primary: #ffffff;
       --text-secondary: #94a3b8;
       --kick-green: #53fc18;
+      --font-scale: 1;
+      --brightness-val: 1;
+      --line-height-val: normal;
+      --letter-spacing-val: normal;
     }
 
     * {
@@ -22,7 +26,7 @@
       cursor: url('icons8-cursor-100.png') 4 4, auto;
     }
 
-    a, button, .link-card, .stream-title-box {
+    a, button, .link-card, .stream-title-box, .accessibility-btn, .acc-option, input {
       cursor: url('icons8-cursor-100.png') 4 4, pointer;
     }
 
@@ -39,6 +43,334 @@
       padding: 45px 20px;
       overflow-x: hidden;
       position: relative;
+      font-size: calc(1rem * var(--font-scale));
+      filter: brightness(var(--brightness-val));
+      line-height: var(--line-height-val);
+      letter-spacing: var(--letter-spacing-val);
+    }
+
+    /* החלת שינוי גודל הטקסט על כל אלמנט שקיים באתר */
+    body *, body h1, body h2, body p, body span, body a {
+      font-size: calc(initial * var(--font-scale));
+    }
+    /* תיקון ספציפי לגודל כותרות וכרטיסיות בהתאם לפקטור */
+    h1 { font-size: calc(2.2rem * var(--font-scale)) !important; }
+    .link-title { font-size: calc(1.05rem * var(--font-scale)) !important; }
+    .link-subtitle { font-size: calc(0.78rem * var(--font-scale)) !important; }
+    .bio { font-size: calc(0.84rem * var(--font-scale)) !important; }
+
+    /* מצבי נגישות גלובליים */
+    body.high-contrast-dark {
+      --bg-color: #000000;
+      --card-base: #111111;
+      --text-primary: #ffff00;
+      --text-secondary: #ffffff;
+    }
+
+    body.high-contrast-light {
+      --bg-color: #ffffff;
+      --card-base: #f0f0f0;
+      --text-primary: #000000;
+      --text-secondary: #333333;
+    }
+
+    body.high-saturation * {
+      filter: saturate(2.5);
+    }
+
+    body.grayscale {
+      filter: grayscale(100%) brightness(var(--brightness-val));
+    }
+
+    body.highlight-links a {
+      background-color: yellow !important;
+      color: black !important;
+      outline: 3px solid red !important;
+    }
+
+    body.pause-motion *, body.pause-motion .star, body.pause-motion .mini-face, body.pause-motion .hero-bg-face, body.pause-motion .mouse-glow {
+      animation: none !important;
+      transition: none !important;
+    }
+
+    body.focus-mode *:not(:focus):not(body):not(html) {
+      opacity: 0.3;
+    }
+    body.focus-mode *:focus {
+      outline: 4px solid #53fc18 !important;
+      opacity: 1 !important;
+    }
+
+    /* סרגל קריאה */
+    #readingRuler {
+      position: fixed;
+      left: 0;
+      width: 100vw;
+      height: 40px;
+      background: rgba(255, 255, 0, 0.25);
+      border-top: 2px solid yellow;
+      border-bottom: 2px solid yellow;
+      pointer-events: none;
+      display: none;
+      z-index: 99999;
+    }
+
+    /* כפתור נגישות צף מעוצב */
+    .accessibility-btn {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      width: 54px;
+      height: 54px;
+      background: linear-gradient(135deg, #121621, #1e2638);
+      border: 2px solid rgba(83, 252, 24, 0.6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #53fc18;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(83, 252, 24, 0.2);
+      z-index: 10000;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .accessibility-btn:hover {
+      transform: scale(1.12) rotate(15deg);
+      border-color: #53fc18;
+      box-shadow: 0 0 25px rgba(83, 252, 24, 0.5);
+    }
+
+    .accessibility-btn svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    /* חלון תפריט נגישות מעוצב מחדש */
+    .accessibility-modal {
+      position: fixed;
+      bottom: 95px;
+      right: 25px;
+      width: 380px;
+      max-height: 82vh;
+      background: rgba(15, 19, 29, 0.95);
+      border: 1px solid rgba(83, 252, 24, 0.3);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(56, 189, 248, 0.1);
+      z-index: 10001;
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      transform: scale(0.85) translateY(20px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .accessibility-modal.open {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .acc-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 12px;
+    }
+
+    .acc-header h2 {
+      font-size: 1.25rem !important;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, #53fc18 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .acc-close {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .acc-close:hover {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .acc-sub {
+      font-size: 0.78rem !important;
+      color: #94a3b8;
+      margin-bottom: 16px;
+      margin-top: 8px;
+    }
+
+    .acc-body {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+      max-height: calc(70vh - 80px);
+      padding-left: 4px;
+      padding-right: 2px;
+    }
+
+    .acc-body::-webkit-scrollbar {
+      width: 5px;
+    }
+    .acc-body::-webkit-scrollbar-thumb {
+      background: rgba(83, 252, 24, 0.3);
+      border-radius: 10px;
+    }
+
+    .acc-control-group {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .acc-control-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.84rem !important;
+      font-weight: 700;
+      color: #e2e8f0;
+    }
+
+    .acc-slider {
+      width: 100%;
+      accent-color: #53fc18;
+      height: 6px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 3px;
+      outline: none;
+    }
+
+    .acc-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .acc-option {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      padding: 12px 10px;
+      border-radius: 14px;
+      font-size: 0.78rem !important;
+      font-weight: 700;
+      text-align: center;
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .acc-option:hover {
+      background: rgba(83, 252, 24, 0.08);
+      border-color: rgba(83, 252, 24, 0.35);
+      color: #ffffff;
+      transform: translateY(-2px);
+    }
+
+    .acc-option.active {
+      background: rgba(83, 252, 24, 0.15);
+      border-color: #53fc18;
+      color: #53fc18;
+      box-shadow: 0 0 12px rgba(83, 252, 24, 0.2);
+    }
+
+    .acc-reset-btn {
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      color: #f87171;
+      padding: 13px;
+      border-radius: 14px;
+      font-size: 0.82rem !important;
+      font-weight: 700;
+      text-align: center;
+      margin-top: 6px;
+      transition: all 0.2s;
+    }
+
+    .acc-reset-btn:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+      color: #ffffff;
+    }
+
+    /* מסך פתיחה אנימציה (Intro) */
+    #intro-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: #05070b;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out;
+    }
+
+    #intro-screen.fade-out {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .intro-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      animation: introZoom 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .intro-logo {
+      width: 90px;
+      height: 90px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid rgba(83, 252, 24, 0.5);
+      box-shadow: 0 0 30px rgba(83, 252, 24, 0.3);
+    }
+
+    .intro-title {
+      font-size: 2.4rem;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      background: linear-gradient(180deg, #ffffff 0%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 25px rgba(56, 189, 248, 0.4);
+    }
+
+    @keyframes introZoom {
+      0% { transform: scale(0.85); opacity: 0; filter: blur(8px); }
+      100% { transform: scale(1); opacity: 1; filter: blur(0); }
     }
 
     /* אור לבן עדין שעוקב אחרי העכבר */
@@ -92,7 +424,6 @@
       overflow: hidden;
     }
 
-    /* פנים ענקיות שקופות במרכז הרקע */
     .hero-bg-face {
       position: fixed;
       top: 50%;
@@ -111,7 +442,6 @@
       50% { transform: translate(-50%, -52%) scale(1.04); }
     }
 
-    /* פנים קטנות מרחפות */
     .mini-face {
       position: absolute;
       bottom: -100px;
@@ -138,7 +468,6 @@
       z-index: 10;
     }
 
-    /* אזור פרופיל */
     .profile {
       text-align: center;
       margin-bottom: 28px;
@@ -191,7 +520,6 @@
       margin-bottom: 16px;
     }
 
-    /* התיבה המעוגלת לכותרת הלייב */
     .stream-title-box {
       display: flex;
       align-items: center;
@@ -233,7 +561,6 @@
       letter-spacing: 0.06em;
     }
 
-    /* רשת הכרטיסיות - 2 עמודות */
     .links-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -245,7 +572,6 @@
       grid-column: span 2;
     }
 
-    /* קו הפרדה ירוק-זהוב עדין */
     .section-divider {
       grid-column: span 2;
       height: 1px;
@@ -324,7 +650,6 @@
       color: var(--text-secondary);
     }
 
-    /* Kick - ירוק מותג */
     .card-kick {
       background: linear-gradient(135deg, rgba(83, 252, 24, 0.09) 0%, var(--card-base) 72%);
       border-color: rgba(83, 252, 24, 0.28);
@@ -343,7 +668,6 @@
       box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(83, 252, 24, 0.22);
     }
 
-    /* Game2Earn Community & תרומות - זהב/ענבר */
     .card-gold {
       background: linear-gradient(135deg, rgba(212, 155, 84, 0.1) 0%, var(--card-base) 72%);
       border-color: rgba(212, 155, 84, 0.28);
@@ -358,7 +682,6 @@
       box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(212, 155, 84, 0.2);
     }
 
-    /* YouTube - אדום מותג */
     .card-youtube {
       background: linear-gradient(135deg, rgba(225, 75, 86, 0.09) 0%, var(--card-base) 72%);
       border-color: rgba(225, 75, 86, 0.24);
@@ -373,7 +696,6 @@
       box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(225, 75, 86, 0.18);
     }
 
-    /* TikTok - טורקיז-טיקטוק */
     .card-tiktok {
       background: linear-gradient(135deg, rgba(45, 168, 184, 0.1) 0%, var(--card-base) 72%);
       border-color: rgba(45, 168, 184, 0.25);
@@ -388,7 +710,6 @@
       box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 18px rgba(45, 168, 184, 0.15);
     }
 
-    /* Instagram - ורוד-סגלגל */
     .card-instagram {
       background: linear-gradient(135deg, rgba(196, 108, 155, 0.09) 0%, var(--card-base) 72%);
       border-color: rgba(196, 108, 155, 0.24);
@@ -403,7 +724,6 @@
       box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(196, 108, 155, 0.18);
     }
 
-    /* Discord - כחול-סגול */
     .card-discord {
       background: linear-gradient(135deg, rgba(108, 132, 212, 0.1) 0%, var(--card-base) 72%);
       border-color: rgba(108, 132, 212, 0.26);
@@ -418,7 +738,6 @@
       box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(108, 132, 212, 0.2);
     }
 
-    /* התאמה למסכי טלפון (מובייל) */
     @media (max-width: 640px) {
       .links-grid {
         grid-template-columns: 1fr;
@@ -442,6 +761,70 @@
 </head>
 <body>
 
+  <!-- סרגל קריאה -->
+  <div id="readingRuler"></div>
+
+  <!-- כפתור נגישות צף -->
+  <button class="accessibility-btn" id="accToggleBtn" aria-label="פתח תפריט נגישות">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="4" r="2"></circle>
+      <path d="M19 13v-2c-1.5 0-3-.5-4-1.5L13 7h-2l-2 2.5C8 10.5 6.5 11 5 11v2c2 0 3.5-.5 4.5-1.5L11 11v8h2v-6l1.5 2c1 1 2.5 1.5 4.5 1.5z"></path>
+    </svg>
+  </button>
+
+  <!-- חלון תפריט נגישות מעוצב מחדש -->
+  <div class="accessibility-modal" id="accModal">
+    <div class="acc-header">
+      <h2>נגישות // Accessibility</h2>
+      <button class="acc-close" id="accCloseBtn">✕</button>
+    </div>
+    <p class="acc-sub">כלים להתאמה אישית של חווית הגלישה באתר</p>
+
+    <div class="acc-body">
+      <!-- גודל טקסט -->
+      <div class="acc-control-group">
+        <div class="acc-control-label">
+          <span>גודל טקסט (Font size)</span>
+          <span id="fontSizeVal">100%</span>
+        </div>
+        <input type="range" min="85" max="150" value="100" class="acc-slider" id="fontSizeSlider">
+      </div>
+
+      <!-- בהירות -->
+      <div class="acc-control-group">
+        <div class="acc-control-label">
+          <span>בהירות מסך (Brightness)</span>
+          <span id="brightnessVal">100%</span>
+        </div>
+        <input type="range" min="70" max="130" value="100" class="acc-slider" id="brightnessSlider">
+      </div>
+
+      <!-- אפשרויות נגישות (גריד מעוצב מחדש) -->
+      <div class="acc-grid-2">
+        <button class="acc-option" data-action="dark-contrast">ניגודיות כהה</button>
+        <button class="acc-option" data-action="light-contrast">ניגודיות בהירה</button>
+        <button class="acc-option" data-action="high-saturation">רוויה גבוהה</button>
+        <button class="acc-option" data-action="grayscale">שחור-לבן</button>
+        <button class="acc-option" data-action="highlight-links">הדגשת קישורים</button>
+        <button class="acc-option" data-action="pause-motion">עצירת אנימציות</button>
+        <button class="acc-option" data-action="focus-mode">מצב מיקוד</button>
+        <button class="acc-option" data-action="line-height">ריווח שורות</button>
+        <button class="acc-option" data-action="text-spacing">ריווח אותיות</button>
+        <button class="acc-option" data-action="reading-ruler">סרגל קריאה</button>
+      </div>
+
+      <button class="acc-reset-btn" id="accResetBtn">איפוס הגדרות נגישות</button>
+    </div>
+  </div>
+
+  <!-- מסך פתיחה אנימציה -->
+  <div id="intro-screen">
+    <div class="intro-content">
+      <img src="logo.png" alt="DrFishyQw" class="intro-logo">
+      <div class="intro-title">DrFishyQw</div>
+    </div>
+  </div>
+
   <div class="mouse-glow" id="mouseGlow"></div>
   <div class="stars-bg" id="starsBg"></div>
   <img src="face.png" alt="" class="hero-bg-face">
@@ -450,9 +833,9 @@
   <div class="container">
     <header class="profile">
       <div class="avatar-wrapper" id="avatarWrapper">
-        <img src="logo.png" alt="DRFISHYQW" class="avatar">
+        <img src="logo.png" alt="DrFishyQw" class="avatar">
       </div>
-      <h1>DRFISHYQW</h1>
+      <h1>DrFishyQw</h1>
       <p class="official-subtitle">OFFICIAL LINKS</p>
 
       <a href="https://kick.com/drfishyqw" target="_blank" class="stream-title-box" id="streamTitleBox">
@@ -562,6 +945,130 @@
   </div>
 
   <script>
+    // תפריט הנגישות
+    const accToggleBtn = document.getElementById('accToggleBtn');
+    const accModal = document.getElementById('accModal');
+    const accCloseBtn = document.getElementById('accCloseBtn');
+    const accResetBtn = document.getElementById('accResetBtn');
+
+    accToggleBtn.addEventListener('click', () => {
+      accModal.classList.toggle('open');
+    });
+
+    accCloseBtn.addEventListener('click', () => {
+      accModal.classList.remove('open');
+    });
+
+    // סליידר גודל טקסט מתוקן
+    const fontSizeSlider = document.getElementById('fontSizeSlider');
+    const fontSizeVal = document.getElementById('fontSizeVal');
+    fontSizeSlider.addEventListener('input', (e) => {
+      const val = e.target.value;
+      fontSizeVal.textContent = val + '%';
+      document.documentElement.style.setProperty('--font-scale', val / 100);
+    });
+
+    const brightnessSlider = document.getElementById('brightnessSlider');
+    const brightnessVal = document.getElementById('brightnessVal');
+    brightnessSlider.addEventListener('input', (e) => {
+      const val = e.target.value;
+      brightnessVal.textContent = val + '%';
+      document.documentElement.style.setProperty('--brightness-val', val / 100);
+    });
+
+    // כפתורי נגישות
+    const options = document.querySelectorAll('.acc-option');
+    options.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.getAttribute('data-action');
+        
+        if (action === 'dark-contrast') {
+          document.body.classList.toggle('high-contrast-dark');
+          document.body.classList.remove('high-contrast-light');
+          btn.classList.toggle('active');
+        } else if (action === 'light-contrast') {
+          document.body.classList.toggle('high-contrast-light');
+          document.body.classList.remove('high-contrast-dark');
+          btn.classList.toggle('active');
+        } else if (action === 'high-saturation') {
+          document.body.classList.toggle('high-saturation');
+          btn.classList.toggle('active');
+        } else if (action === 'grayscale') {
+          document.body.classList.toggle('grayscale');
+          btn.classList.toggle('active');
+        } else if (action === 'highlight-links') {
+          document.body.classList.toggle('highlight-links');
+          btn.classList.toggle('active');
+        } else if (action === 'pause-motion') {
+          document.body.classList.toggle('pause-motion');
+          btn.classList.toggle('active');
+        } else if (action === 'focus-mode') {
+          document.body.classList.toggle('focus-mode');
+          btn.classList.toggle('active');
+        } else if (action === 'line-height') {
+          const current = document.documentElement.style.getPropertyValue('--line-height-val');
+          if (!current || current === 'normal') {
+            document.documentElement.style.setProperty('--line-height-val', '1.9');
+            btn.classList.add('active');
+          } else {
+            document.documentElement.style.setProperty('--line-height-val', 'normal');
+            btn.classList.remove('active');
+          }
+        } else if (action === 'text-spacing') {
+          const current = document.documentElement.style.getPropertyValue('--letter-spacing-val');
+          if (!current || current === 'normal') {
+            document.documentElement.style.setProperty('--letter-spacing-val', '2px');
+            btn.classList.add('active');
+          } else {
+            document.documentElement.style.setProperty('--letter-spacing-val', 'normal');
+            btn.classList.remove('active');
+          }
+        } else if (action === 'reading-ruler') {
+          const ruler = document.getElementById('readingRuler');
+          if (ruler.style.display === 'block') {
+            ruler.style.display = 'none';
+            btn.classList.remove('active');
+          } else {
+            ruler.style.display = 'block';
+            btn.classList.add('active');
+          }
+        }
+      });
+    });
+
+    // סרגל קריאה עוקב אחרי העכבר
+    window.addEventListener('mousemove', (e) => {
+      const ruler = document.getElementById('readingRuler');
+      if (ruler.style.display === 'block') {
+        ruler.style.top = (e.clientY - 20) + 'px';
+      }
+    });
+
+    // איפוס נגישות מלא
+    accResetBtn.addEventListener('click', () => {
+      document.body.className = '';
+      document.documentElement.style.setProperty('--font-scale', '1');
+      document.documentElement.style.setProperty('--brightness-val', '1');
+      document.documentElement.style.setProperty('--line-height-val', 'normal');
+      document.documentElement.style.setProperty('--letter-spacing-val', 'normal');
+      fontSizeSlider.value = 100;
+      fontSizeVal.textContent = '100%';
+      brightnessSlider.value = 100;
+      brightnessVal.textContent = '100%';
+      document.getElementById('readingRuler').style.display = 'none';
+      options.forEach(b => b.classList.remove('active'));
+    });
+
+    // הסרת מסך הפתיחה לאחר 1.4 שניות
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const intro = document.getElementById('intro-screen');
+        if (intro) {
+          intro.classList.add('fade-out');
+        }
+      }, 1200);
+    });
+
     const KICK_USERNAME = 'drfishyqw';
 
     async function fetchKickChannelData(username) {
