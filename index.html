@@ -159,11 +159,9 @@
       position: relative;
       isolation: isolate;
       width: 100%;
-      max-width: 560px;
-      max-height: min(88vh, 900px);
-      overflow-y: auto;
-      overscroll-behavior: contain;
-      padding: 34px 30px 24px;
+      max-width: 880px;
+      overflow: hidden;
+      padding: 34px 32px 28px;
       border-radius: 28px;
       border: 1px solid transparent;
       background:
@@ -175,11 +173,10 @@
       flex-direction: column;
       gap: 18px;
       text-align: center;
-      transform: translateY(28px) scale(0.96);
+      /* --fit מחושב ב-JS: מקטין את החלון כך שתמיד ייכנס במסך בלי גלילה */
+      transform: translateY(28px) scale(calc(var(--fit, 1) * 0.96));
       opacity: 0;
       transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(var(--accent-rgb), 0.35) transparent;
     }
     .shop-modal-content.accent-discord {
       --accent: #8c9bff;
@@ -188,8 +185,6 @@
       --btn-to: #4450c9;
       --on-accent: #ffffff;
     }
-    .shop-modal-content::-webkit-scrollbar { width: 6px; }
-    .shop-modal-content::-webkit-scrollbar-thumb { background: rgba(var(--accent-rgb), 0.35); border-radius: 10px; }
     /* רשת נקודות עדינה בראש החלון */
     .shop-modal-content::before {
       content: "";
@@ -203,7 +198,22 @@
       mask-image: linear-gradient(180deg, #000 0%, transparent 38%);
       pointer-events: none;
     }
-    .shop-modal-overlay.open .shop-modal-content { transform: translateY(0) scale(1); opacity: 1; }
+    .shop-modal-overlay.open .shop-modal-content { transform: translateY(0) scale(var(--fit, 1)); opacity: 1; }
+
+    /* פריסה: בטלפון עמודה אחת (פתיח, פירוט, מחיר, כפתור); במחשב שתי עמודות */
+    .sm-layout { display: flex; flex-direction: column; gap: 16px; }
+    .sm-aside, .sm-main { display: contents; }
+    .sm-hero { order: 1; }
+    .sm-main > * { order: 2; }
+    .sm-pricing { order: 3; }
+    .buy-btn { order: 4; }
+    .sm-footnote { order: 5; }
+    @media (min-width: 760px) {
+      .sm-layout { display: grid; grid-template-columns: 290px minmax(0, 1fr); align-items: center; gap: 0; }
+      .sm-aside { display: flex; flex-direction: column; gap: 16px; padding-inline-end: 28px; }
+      .sm-main { display: flex; flex-direction: column; gap: 14px; padding-inline-start: 28px; border-inline-start: 1px solid rgba(255, 255, 255, 0.07); }
+      .sm-more, .sm-footnote { margin-top: -4px; }
+    }
 
     .ico { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
     .ico-fill { fill: currentColor; stroke: none; }
@@ -400,31 +410,45 @@
     @keyframes smRise { from { opacity: 0; translate: 0 12px; } to { opacity: 1; translate: 0 0; } }
 
     /* כניסה מדורגת של התוכן כשהחלון נפתח */
-    .shop-modal-overlay.open .shop-modal-content > :not(.shop-modal-close) { animation: smRise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
-    .shop-modal-overlay.open .shop-modal-content > :nth-child(3) { animation-delay: 0.06s; }
-    .shop-modal-overlay.open .shop-modal-content > :nth-child(4) { animation-delay: 0.1s; }
-    .shop-modal-overlay.open .shop-modal-content > :nth-child(5) { animation-delay: 0.14s; }
-    .shop-modal-overlay.open .shop-modal-content > :nth-child(6) { animation-delay: 0.18s; }
-    .shop-modal-overlay.open .shop-modal-content > :nth-child(7) { animation-delay: 0.22s; }
-    .shop-modal-overlay.open .shop-modal-content > :nth-child(8) { animation-delay: 0.26s; }
+    .shop-modal-overlay.open .sm-hero,
+    .shop-modal-overlay.open .sm-main > *,
+    .shop-modal-overlay.open .sm-pricing,
+    .shop-modal-overlay.open .buy-btn,
+    .shop-modal-overlay.open .sm-footnote { animation: smRise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .shop-modal-overlay.open .sm-main > :nth-child(1) { animation-delay: 0.08s; }
+    .shop-modal-overlay.open .sm-main > :nth-child(2) { animation-delay: 0.12s; }
+    .shop-modal-overlay.open .sm-main > :nth-child(3) { animation-delay: 0.16s; }
+    .shop-modal-overlay.open .sm-pricing { animation-delay: 0.14s; }
+    .shop-modal-overlay.open .buy-btn { animation-delay: 0.2s; }
+    .shop-modal-overlay.open .sm-footnote { animation-delay: 0.24s; }
 
     @media (prefers-reduced-motion: reduce) {
-      .shop-modal-content { transform: none; transition: opacity 0.2s ease; }
-      .shop-modal-overlay.open .shop-modal-content > * { animation: none; }
+      .shop-modal-content { transition: opacity 0.2s ease; }
+      .shop-modal-overlay.open .shop-modal-content * { animation: none !important; }
       .buy-btn::after { display: none; }
     }
 
     @media (max-width: 480px) {
-      .shop-modal-content { padding: 28px 18px 20px; border-radius: 24px; gap: 16px; }
-      .shop-modal-close { top: 14px; left: 14px; }
-      .shop-modal-title { font-size: 1.6rem; }
-      .sm-icon { width: 60px; height: 60px; border-radius: 18px; }
-      .commands-box { gap: 8px; }
-      .command-item { gap: 8px; padding: 9px 10px; font-size: 0.78rem; }
-      .command-item .sm-chip-icon { width: 26px; height: 26px; border-radius: 8px; }
-      .command-item .sm-chip-icon svg { width: 14px; height: 14px; }
-      .sm-amount { font-size: 1.9rem; }
-      .sm-price-box.is-secondary .sm-amount { font-size: 1.5rem; }
+      .shop-modal-content { padding: 24px 16px 18px; border-radius: 22px; }
+      .sm-layout { gap: 12px; }
+      .shop-modal-close { top: 12px; left: 12px; width: 34px; height: 34px; }
+      .sm-hero { gap: 7px; }
+      .sm-icon { width: 52px; height: 52px; border-radius: 16px; }
+      .sm-icon svg { width: 26px; height: 26px; }
+      .shop-modal-title { font-size: 1.5rem; }
+      .sm-tagline { font-size: 0.85rem; line-height: 1.55; }
+      .commands-box { gap: 6px; }
+      .command-item { gap: 7px; padding: 8px 10px; font-size: 0.76rem; }
+      .command-item .sm-chip-icon { display: none; }
+      .command-item::before { content: ""; flex-shrink: 0; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+      .sm-features { gap: 8px; }
+      .sm-features li { gap: 10px; padding: 10px 12px; }
+      .sm-features .sm-chip-icon { width: 32px; height: 32px; }
+      .sm-note { padding: 10px 12px; font-size: 0.76rem; line-height: 1.55; }
+      .sm-price-box { padding: 12px 10px; }
+      .sm-amount { font-size: 1.7rem; }
+      .sm-price-box.is-secondary .sm-amount { font-size: 1.35rem; }
+      .buy-btn { padding: 14px 16px; }
     }
 
     /* מצבי נגישות גלובליים */
@@ -541,7 +565,9 @@
     .mini-face { position: absolute; bottom: -100px; mix-blend-mode: lighten; user-select: none; animation: floatUp linear infinite; }
     @keyframes floatUp { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 15% { opacity: var(--max-opacity); } 85% { opacity: var(--max-opacity); } 100% { transform: translateY(-115vh) rotate(360deg); opacity: 0; } }
 
-    .container { max-width: 780px; width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 10; }
+    /* העמודה הראשית נגללת בעצמה כשהתוכן ארוך מהמסך (במקום להיחתך) */
+    .container { max-width: 812px; width: 100%; flex: 1 1 auto; min-height: 0; overflow-x: hidden; overflow-y: auto; scrollbar-width: none; padding: 6px 16px 12px; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 10; }
+    .container::-webkit-scrollbar { display: none; }
 
     .profile { text-align: center; margin-bottom: 28px; width: 100%; display: flex; flex-direction: column; align-items: center; }
     .avatar-wrapper { width: 104px; height: 104px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, #38bdf8, rgba(255,255,255,0.1)); margin: 0 auto 16px; box-shadow: 0 12px 35px rgba(56, 189, 248, 0.25); transition: all 0.4s ease; }
@@ -599,10 +625,129 @@
     .card-discord .link-icon { background: rgba(108, 132, 212, 0.13); border-color: rgba(108, 132, 212, 0.28); color: #7289da; }
     .card-discord:hover { border-color: rgba(108, 132, 212, 0.58); box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(108, 132, 212, 0.2); }
 
+    /* ===== עמוד החנות ===== */
+    .shop-profile { margin-bottom: 18px; }
+    .shop-profile .avatar-wrapper { width: 70px; height: 70px; margin-bottom: 10px; }
+    .container:has(#shop-view.active-view) .footer { margin-top: 22px; }
+    .shop-profile h1 { font-size: calc(1.9rem * var(--font-scale)) !important; margin-bottom: 4px; }
+    .shop-profile .official-subtitle { margin-bottom: 8px; }
+
+    .shop-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; width: 100%; }
+
+    .product-card {
+      --accent: #53fc18;
+      --accent-rgb: 83, 252, 24;
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      padding: 18px 18px 16px;
+      border-radius: 22px;
+      border: 1px solid transparent;
+      text-align: right;
+      color: var(--text-primary);
+      background:
+        radial-gradient(110% 70% at 100% 0%, rgba(var(--accent-rgb), 0.15) 0%, transparent 60%) padding-box,
+        linear-gradient(180deg, rgba(18, 22, 33, 0.9) 0%, rgba(10, 13, 21, 0.94) 100%) padding-box,
+        linear-gradient(160deg, rgba(var(--accent-rgb), 0.55) 0%, rgba(255, 255, 255, 0.06) 45%, rgba(var(--accent-rgb), 0.22) 100%) border-box;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      box-shadow: 0 18px 40px -18px rgba(0, 0, 0, 0.85);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+    }
+    .product-card.accent-discord { --accent: #8c9bff; --accent-rgb: 140, 155, 255; }
+    /* ברק שעובר על הכרטיס במעבר עכבר */
+    .product-card::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -70%;
+      width: 50%;
+      z-index: -1;
+      background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+      transform: skewX(-20deg);
+      transition: left 0.8s ease;
+      pointer-events: none;
+    }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 26px 50px -20px rgba(0, 0, 0, 0.9), 0 0 36px -10px rgba(var(--accent-rgb), 0.5); }
+    .product-card:hover::after { left: 130%; }
+    .product-card:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+    .pc-top { display: flex; align-items: center; gap: 14px; }
+    .pc-head { display: flex; flex-direction: column; align-items: flex-start; gap: 5px; }
+    .pc-icon {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      background: linear-gradient(145deg, rgba(var(--accent-rgb), 0.22), rgba(var(--accent-rgb), 0.05));
+      border: 1px solid rgba(var(--accent-rgb), 0.4);
+      box-shadow: 0 10px 24px -8px rgba(var(--accent-rgb), 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .pc-icon svg { width: 26px; height: 26px; }
+    .product-card:hover .pc-icon { transform: scale(1.07) rotate(-4deg); }
+    .pc-title { font-size: 1.25rem; font-weight: 800; letter-spacing: 0.01em; }
+    .pc-desc { font-size: 0.8rem; line-height: 1.6; color: #9aa6b8; }
+    .pc-list { list-style: none; display: flex; flex-direction: column; gap: 7px; }
+    .pc-list li { display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: #dbe2ec; }
+    .pc-list svg { flex-shrink: 0; width: 16px; height: 16px; color: var(--accent); }
+    .pc-footer { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: auto; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, 0.07); }
+    .pc-price { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
+    .pc-amount { direction: ltr; display: inline-flex; align-items: baseline; gap: 3px; font-size: 1.5rem; font-weight: 800; line-height: 1; color: #ffffff; }
+    .pc-amount small { font-size: 0.9rem; font-weight: 700; color: var(--accent); }
+    .pc-price-note { font-size: 0.72rem; font-weight: 600; color: #8b97aa; }
+    .pc-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 14px;
+      border-radius: 12px;
+      white-space: nowrap;
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(var(--accent-rgb), 0.1);
+      border: 1px solid rgba(var(--accent-rgb), 0.3);
+      transition: background 0.25s ease, color 0.25s ease;
+    }
+    .pc-cta svg { width: 15px; height: 15px; transition: transform 0.25s ease; }
+    .product-card:hover .pc-cta { background: rgba(var(--accent-rgb), 0.18); color: #ffffff; }
+    .product-card:hover .pc-cta svg { transform: translateX(-3px); }
+
+    /* הלוגו האמיתי של דיסקורד על רקע הסגול הרשמי */
+    .pc-icon.is-discord, .sm-icon.is-discord { color: #ffffff; background: linear-gradient(145deg, #6f7bf7, #5865f2); border-color: rgba(255, 255, 255, 0.22); }
+
+    .shop-steps-label { width: 100%; margin: 16px 0 10px; }
+    .shop-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; width: 100%; }
+    .shop-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 16px;
+      text-align: right;
+      background: rgba(18, 22, 33, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    .step-num { flex-shrink: 0; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; font-size: 0.8rem; font-weight: 800; color: #04130a; background: linear-gradient(135deg, #53fc18, #1fb84a); box-shadow: 0 0 14px rgba(83, 252, 24, 0.35); }
+    .step-text { display: flex; flex-direction: column; gap: 1px; }
+    .step-text strong { font-size: 0.82rem; font-weight: 700; color: #f1f5f9; }
+    .step-text span { font-size: 0.72rem; color: #8b97aa; }
+
     @media (max-width: 640px) {
+      .container { padding: 6px 4px 16px; }
       .links-grid { grid-template-columns: 1fr; }
       .span-full, .section-divider { grid-column: span 1; }
       .card-right-col, .card-left-col { flex-direction: row; }
+      .shop-grid, .shop-steps { grid-template-columns: 1fr; }
     }
 
     .footer { margin-top: 45px; font-size: 0.75rem; color: var(--text-secondary); letter-spacing: 0.05em; opacity: 0.7; }
@@ -682,6 +827,8 @@
       <symbol id="i-user-plus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></symbol>
       <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></symbol>
       <symbol id="i-chart" viewBox="0 0 24 24"><path d="M12 20V10M18 20V4M6 20v-4"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></symbol>
+      <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></symbol>
       <symbol id="i-discord" viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></symbol>
     </defs>
   </svg>
@@ -691,44 +838,50 @@
     <div class="shop-modal-content accent-discord" role="dialog" aria-modal="true" aria-labelledby="botModalTitle">
       <button class="shop-modal-close" data-close="modalDiscordBot" aria-label="סגירה"><svg class="ico"><use href="#i-close"/></svg></button>
 
-      <div class="sm-hero">
-        <div class="sm-icon"><svg class="ico"><use href="#i-bot"/></svg></div>
-        <span class="sm-badge">חבילת בוט</span>
-        <h2 class="shop-modal-title" id="botModalTitle">Discord Bot</h2>
-        <p class="sm-tagline">בוט אישי בעיצוב אישי לשרת הדיסקורד שלכם, עם מגוון פקודות ניהול וציבוריות.</p>
-      </div>
+      <div class="sm-layout">
+        <div class="sm-aside">
+          <div class="sm-hero">
+            <div class="sm-icon is-discord"><svg class="ico-fill"><use href="#i-discord"/></svg></div>
+            <span class="sm-badge">חבילת בוט</span>
+            <h2 class="shop-modal-title" id="botModalTitle">Discord Bot</h2>
+            <p class="sm-tagline">בוט אישי בעיצוב אישי לשרת הדיסקורד שלכם, עם מגוון פקודות ניהול וציבוריות.</p>
+          </div>
 
-      <div class="sm-label">דוגמאות לפקודות</div>
+          <div class="sm-pricing">
+            <div class="sm-price-box">
+              <span class="sm-amount">55<small>₪</small></span>
+              <span class="sm-price-label">תשלום ראשוני</span>
+            </div>
+            <span class="sm-plus">+</span>
+            <div class="sm-price-box is-secondary">
+              <span class="sm-amount">10<small>₪</small></span>
+              <span class="sm-price-label">בכל חודש</span>
+            </div>
+          </div>
 
-      <div class="commands-box">
-        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-ticket"/></svg></span>Tickets System</div>
-        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-gift"/></svg></span>Giveaways System</div>
-        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-bell"/></svg></span>Stream Alerts</div>
-        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-file"/></svg></span>Server Logs</div>
-        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-cpu"/></svg></span>AI Moderator</div>
-        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-terminal"/></svg></span>Custom Commands</div>
-        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-shield"/></svg></span>Verification System</div>
-        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-user-plus"/></svg></span>Welcome System</div>
-        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-smile"/></svg></span>Memes Commands</div>
-        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-chart"/></svg></span>Levels System</div>
-      </div>
-
-      <p class="sm-more"><b>+</b> ועוד מגוון פקודות ומערכות שתרצו להוסיף!</p>
-
-      <div class="sm-pricing">
-        <div class="sm-price-box">
-          <span class="sm-amount">55<small>₪</small></span>
-          <span class="sm-price-label">תשלום ראשוני</span>
+          <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="buy-btn"><svg class="ico-fill"><use href="#i-discord"/></svg><span>רכישה / הזמנה</span></a>
+          <p class="sm-footnote">ההזמנה מתבצעת דרך שרת הדיסקורד</p>
         </div>
-        <span class="sm-plus">+</span>
-        <div class="sm-price-box is-secondary">
-          <span class="sm-amount">10<small>₪</small></span>
-          <span class="sm-price-label">בכל חודש</span>
+
+        <div class="sm-main">
+          <div class="sm-label">דוגמאות לפקודות</div>
+
+          <div class="commands-box">
+            <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-ticket"/></svg></span>Tickets System</div>
+            <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-gift"/></svg></span>Giveaways System</div>
+            <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-bell"/></svg></span>Stream Alerts</div>
+            <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-file"/></svg></span>Server Logs</div>
+            <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-cpu"/></svg></span>AI Moderator</div>
+            <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-terminal"/></svg></span>Custom Commands</div>
+            <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-shield"/></svg></span>Verification System</div>
+            <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-user-plus"/></svg></span>Welcome System</div>
+            <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-smile"/></svg></span>Memes Commands</div>
+            <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-chart"/></svg></span>Levels System</div>
+          </div>
+
+          <p class="sm-more"><b>+</b> ועוד מגוון פקודות ומערכות שתרצו להוסיף!</p>
         </div>
       </div>
-
-      <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="buy-btn"><svg class="ico-fill"><use href="#i-discord"/></svg><span>רכישה / הזמנה</span></a>
-      <p class="sm-footnote">ההזמנה מתבצעת דרך שרת הדיסקורד</p>
     </div>
   </div>
 
@@ -737,44 +890,50 @@
     <div class="shop-modal-content" role="dialog" aria-modal="true" aria-labelledby="linksModalTitle">
       <button class="shop-modal-close" data-close="modalLinksWebsite" aria-label="סגירה"><svg class="ico"><use href="#i-close"/></svg></button>
 
-      <div class="sm-hero">
-        <div class="sm-icon"><svg class="ico"><use href="#i-globe"/></svg></div>
-        <span class="sm-badge">חבילת אתר</span>
-        <h2 class="shop-modal-title" id="linksModalTitle">Links Website</h2>
-        <p class="sm-tagline">אתר מעוצב אישית לבקשתכם, שמרכז את כל הלינקים החשובים שלכם למדיה החברתית.</p>
-      </div>
+      <div class="sm-layout">
+        <div class="sm-aside">
+          <div class="sm-hero">
+            <div class="sm-icon"><svg class="ico"><use href="#i-globe"/></svg></div>
+            <span class="sm-badge">חבילת אתר</span>
+            <h2 class="shop-modal-title" id="linksModalTitle">Links Website</h2>
+            <p class="sm-tagline">אתר מעוצב אישית לבקשתכם, שמרכז את כל הלינקים החשובים שלכם למדיה החברתית.</p>
+          </div>
 
-      <div class="sm-label">מה מקבלים</div>
+          <div class="sm-pricing">
+            <div class="sm-price-box">
+              <span class="sm-amount">99<small>₪</small></span>
+              <span class="sm-price-label">תשלום חד פעמי</span>
+            </div>
+          </div>
 
-      <ul class="sm-features">
-        <li>
-          <span class="sm-chip-icon"><svg class="ico"><use href="#i-wand"/></svg></span>
-          <span class="sm-feat-text"><strong>עיצוב אישי</strong><span>מעוצב במיוחד לפי הבקשה שלכם</span></span>
-        </li>
-        <li>
-          <span class="sm-chip-icon"><svg class="ico"><use href="#i-link"/></svg></span>
-          <span class="sm-feat-text"><strong>כל הלינקים במקום אחד</strong><span>כל מה שחשוב לכם להפיץ במדיה החברתית</span></span>
-        </li>
-        <li>
-          <span class="sm-chip-icon"><svg class="ico"><use href="#i-star"/></svg></span>
-          <span class="sm-feat-text"><strong>נקי ומרשים</strong><span>מותאם אישית לצרכים שלכם</span></span>
-        </li>
-      </ul>
+          <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="buy-btn"><svg class="ico-fill"><use href="#i-discord"/></svg><span>רכישה / הזמנה</span></a>
+          <p class="sm-footnote">ההזמנה מתבצעת דרך שרת הדיסקורד</p>
+        </div>
 
-      <div class="sm-note">
-        <svg class="ico"><use href="#i-info"/></svg>
-        <p><strong>שימו לב:</strong> כתובת האתר תהיה כתובת ברירת המחדל של GitHub. כתובת אתר אישית מגיעה בתוספת תשלום, בהתאם לכתובת שתרצו.</p>
-      </div>
+        <div class="sm-main">
+          <div class="sm-label">מה מקבלים</div>
 
-      <div class="sm-pricing">
-        <div class="sm-price-box">
-          <span class="sm-amount">99<small>₪</small></span>
-          <span class="sm-price-label">תשלום חד פעמי</span>
+          <ul class="sm-features">
+            <li>
+              <span class="sm-chip-icon"><svg class="ico"><use href="#i-wand"/></svg></span>
+              <span class="sm-feat-text"><strong>עיצוב אישי</strong><span>מעוצב במיוחד לפי הבקשה שלכם</span></span>
+            </li>
+            <li>
+              <span class="sm-chip-icon"><svg class="ico"><use href="#i-link"/></svg></span>
+              <span class="sm-feat-text"><strong>כל הלינקים במקום אחד</strong><span>כל מה שחשוב לכם להפיץ במדיה החברתית</span></span>
+            </li>
+            <li>
+              <span class="sm-chip-icon"><svg class="ico"><use href="#i-star"/></svg></span>
+              <span class="sm-feat-text"><strong>נקי ומרשים</strong><span>מותאם אישית לצרכים שלכם</span></span>
+            </li>
+          </ul>
+
+          <div class="sm-note">
+            <svg class="ico"><use href="#i-info"/></svg>
+            <p><strong>שימו לב:</strong> כתובת האתר תהיה כתובת ברירת המחדל של GitHub. כתובת אתר אישית מגיעה בתוספת תשלום, בהתאם לכתובת שתרצו.</p>
+          </div>
         </div>
       </div>
-
-      <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="buy-btn"><svg class="ico-fill"><use href="#i-discord"/></svg><span>רכישה / הזמנה</span></a>
-      <p class="sm-footnote">ההזמנה מתבצעת דרך שרת הדיסקורד</p>
     </div>
   </div>
 
@@ -896,7 +1055,7 @@
 
     <!-- ================= עמוד החנות (SHOP) ================= -->
     <div id="shop-view" class="view-section">
-      <header class="profile">
+      <header class="profile shop-profile">
         <div class="avatar-wrapper">
           <img src="logo.png" alt="DrFishyQw" class="avatar">
         </div>
@@ -905,25 +1064,71 @@
         <p class="bio">DrFishy is here for you, check out what he has to offer</p>
       </header>
 
-      <main class="links-grid">
+      <main class="shop-grid">
         <!-- כרטיס אתר לינקים -->
-        <div class="link-card card-kick card-left-col" id="openLinksModal" style="cursor: pointer;">
-          <div class="link-icon">🌐</div>
-          <div class="link-text-group">
-            <span class="link-title">Links Website</span>
-            <span class="link-subtitle">אתר מעוצב אישית לבקשתכם המרכז את כל הלינקים החשובים שלכם למדיה החברתית</span>
+        <article class="product-card" id="openLinksModal" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Links Website - לפרטים והזמנה">
+          <div class="pc-top">
+            <div class="pc-icon"><svg class="ico"><use href="#i-globe"/></svg></div>
+            <div class="pc-head">
+              <span class="sm-badge">חבילת אתר</span>
+              <h3 class="pc-title">Links Website</h3>
+            </div>
           </div>
-        </div>
+          <p class="pc-desc">אתר מעוצב אישית לבקשתכם המרכז את כל הלינקים החשובים שלכם למדיה החברתית</p>
+          <ul class="pc-list">
+            <li><svg class="ico"><use href="#i-check"/></svg>עיצוב אישי לפי הבקשה שלכם</li>
+            <li><svg class="ico"><use href="#i-check"/></svg>כל הלינקים במקום אחד</li>
+            <li><svg class="ico"><use href="#i-check"/></svg>נקי, מרשים ומותאם אישית</li>
+          </ul>
+          <div class="pc-footer">
+            <div class="pc-price">
+              <span class="pc-amount">99<small>₪</small></span>
+              <span class="pc-price-note">תשלום חד פעמי</span>
+            </div>
+            <span class="pc-cta">לפרטים והזמנה<svg class="ico"><use href="#i-arrow"/></svg></span>
+          </div>
+        </article>
 
         <!-- כרטיס בוט דיסקורד -->
-        <div class="link-card card-discord card-right-col" id="openBotModal" style="cursor: pointer;">
-          <div class="link-icon">🤖</div>
-          <div class="link-text-group">
-            <span class="link-title">Discord Bot</span>
-            <span class="link-subtitle">בוט אישי בעיצוב אישי לשרת הדיסקורד שלכם</span>
+        <article class="product-card accent-discord" id="openBotModal" role="button" tabindex="0" aria-haspopup="dialog" aria-label="Discord Bot - לפרטים והזמנה">
+          <div class="pc-top">
+            <div class="pc-icon is-discord"><svg class="ico-fill"><use href="#i-discord"/></svg></div>
+            <div class="pc-head">
+              <span class="sm-badge">חבילת בוט</span>
+              <h3 class="pc-title">Discord Bot</h3>
+            </div>
           </div>
-        </div>
+          <p class="pc-desc">בוט אישי בעיצוב אישי לשרת הדיסקורד שלכם</p>
+          <ul class="pc-list">
+            <li><svg class="ico"><use href="#i-check"/></svg>Tickets, Giveaways, Levels ועוד</li>
+            <li><svg class="ico"><use href="#i-check"/></svg>פקודות ניהול ופקודות ציבוריות</li>
+            <li><svg class="ico"><use href="#i-check"/></svg>מערכות נוספות לפי בקשה</li>
+          </ul>
+          <div class="pc-footer">
+            <div class="pc-price">
+              <span class="pc-amount">55<small>₪</small></span>
+              <span class="pc-price-note">ואז 10 ₪ בחודש</span>
+            </div>
+            <span class="pc-cta">לפרטים והזמנה<svg class="ico"><use href="#i-arrow"/></svg></span>
+          </div>
+        </article>
       </main>
+
+      <div class="sm-label shop-steps-label">איך מזמינים?</div>
+      <div class="shop-steps">
+        <div class="shop-step">
+          <span class="step-num">1</span>
+          <span class="step-text"><strong>בוחרים חבילה</strong><span>לוחצים עליה לכל הפרטים</span></span>
+        </div>
+        <div class="shop-step">
+          <span class="step-num">2</span>
+          <span class="step-text"><strong>מזמינים בדיסקורד</strong><span>דרך כפתור ההזמנה בחלון</span></span>
+        </div>
+        <div class="shop-step">
+          <span class="step-num">3</span>
+          <span class="step-text"><strong>מקבלים מוצר מוכן</strong><span>מעוצב במיוחד בשבילכם</span></span>
+        </div>
+      </div>
     </div>
 
     <footer class="footer">
@@ -957,13 +1162,26 @@
     const shopModals = document.querySelectorAll('.shop-modal-overlay');
     let shopModalTrigger = null;
 
+    // מקטין את החלון לפי גובה המסך כדי שכל המידע ייראה בלי גלילה
+    function fitShopModal(modal) {
+      const box = modal.querySelector('.shop-modal-content');
+      box.style.setProperty('--fit', '1');
+      const available = window.innerHeight - 32;
+      const scale = Math.min(1, available / box.offsetHeight);
+      box.style.setProperty('--fit', scale.toFixed(3));
+    }
+
     function openShopModal(modal) {
       shopModalTrigger = document.activeElement;
+      fitShopModal(modal);
       modal.classList.add('open');
       modal.setAttribute('aria-hidden', 'false');
-      modal.querySelector('.shop-modal-content').scrollTop = 0;
       setTimeout(() => modal.querySelector('.shop-modal-close').focus({ preventScroll: true }), 60);
     }
+
+    window.addEventListener('resize', () => {
+      shopModals.forEach(modal => { if (modal.classList.contains('open')) fitShopModal(modal); });
+    });
 
     function closeShopModal(modal) {
       if (!modal.classList.contains('open')) return;
@@ -974,6 +1192,13 @@
 
     document.getElementById('openBotModal').addEventListener('click', () => openShopModal(document.getElementById('modalDiscordBot')));
     document.getElementById('openLinksModal').addEventListener('click', () => openShopModal(document.getElementById('modalLinksWebsite')));
+
+    // פתיחת החבילות גם מהמקלדת (Enter / רווח)
+    document.querySelectorAll('.product-card').forEach(card => {
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); card.click(); }
+      });
+    });
 
     document.querySelectorAll('.shop-modal-close').forEach(btn => {
       btn.addEventListener('click', () => closeShopModal(document.getElementById(btn.getAttribute('data-close'))));
