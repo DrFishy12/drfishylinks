@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>DrFishyQw // Links</title>
+  <title>DrFishyQw // Official Links & Shop</title>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -26,8 +26,13 @@
       cursor: url('icons8-cursor-100.png') 4 4, auto;
     }
 
-    a, button, .accessibility-btn, .acc-option, input, .nav-tab, .link-card, .live-badge {
+    a, button, .link-card, .stream-title-box, .accessibility-btn, .acc-option, input, .nav-tab {
       cursor: url('icons8-cursor-100.png') 4 4, pointer;
+    }
+
+    html {
+      height: 100vh;
+      overflow: hidden;
     }
 
     body {
@@ -37,12 +42,10 @@
         radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.05) 0%, transparent 45%);
       color: var(--text-primary);
       height: 100vh;
-      max-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      padding: 20px;
+      padding: 45px 20px;
       overflow: hidden;
       position: relative;
       font-size: calc(1rem * var(--font-scale));
@@ -54,24 +57,27 @@
     body *, body h1, body h2, body p, body span, body a {
       font-size: calc(initial * var(--font-scale));
     }
-    h1 { font-size: calc(1.8rem * var(--font-scale)) !important; }
+    h1 { font-size: calc(2.2rem * var(--font-scale)) !important; }
+    .link-title { font-size: calc(1.05rem * var(--font-scale)) !important; }
+    .link-subtitle { font-size: calc(0.78rem * var(--font-scale)) !important; }
+    .bio { font-size: calc(0.84rem * var(--font-scale)) !important; }
 
-    /* תפריט ניווט עליון */
+    /* תפריט ניווט עליון בין דפים */
     .nav-tabs {
       display: flex;
       gap: 12px;
-      margin-bottom: 5px;
+      margin-bottom: 20px;
       z-index: 20;
     }
 
     .nav-tab {
       background: rgba(255, 255, 255, 0.04);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 6px 18px;
-      border-radius: 12px;
+      padding: 10px 24px;
+      border-radius: 14px;
       color: var(--text-secondary);
       font-weight: 700;
-      font-size: 0.82rem;
+      font-size: 0.9rem;
       text-decoration: none;
       backdrop-filter: blur(10px);
       transition: all 0.3s ease;
@@ -90,6 +96,177 @@
       box-shadow: 0 0 15px rgba(83, 252, 24, 0.2);
     }
 
+    /* קו הפרדה מעוצב עם אנימציה בדיוק במיקום שביקשת */
+    .header-divider {
+      width: 100%;
+      max-width: 420px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, rgba(83, 252, 24, 0.6) 50%, transparent 100%);
+      margin-bottom: 24px;
+      box-shadow: 0 0 15px rgba(83, 252, 24, 0.35);
+      animation: linePulse 3s ease-in-out infinite;
+      z-index: 20;
+    }
+
+    @keyframes linePulse {
+      0%, 100% { opacity: 0.5; transform: scaleX(0.9); box-shadow: 0 0 10px rgba(83, 252, 24, 0.2); }
+      50% { opacity: 1; transform: scaleX(1); box-shadow: 0 0 22px rgba(83, 252, 24, 0.6); }
+    }
+
+    /* ניהול עמודים (Views) */
+    .view-section {
+      display: none;
+      width: 100%;
+      flex-direction: column;
+      align-items: center;
+      animation: fadeIn 0.25s ease-in-out;
+    }
+
+    .view-section.active-view {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* חלונות מודל (Modals) לקנייה ומידע */
+    .shop-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(5, 7, 11, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      z-index: 20000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .shop-modal-overlay.open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .shop-modal-content {
+      background: rgba(15, 19, 29, 0.95);
+      border: 1px solid rgba(83, 252, 24, 0.4);
+      border-radius: 20px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 30px;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(83, 252, 24, 0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      transform: scale(0.9);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .shop-modal-overlay.open .shop-modal-content {
+      transform: scale(1);
+    }
+
+    .shop-modal-close {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      transition: all 0.2s;
+    }
+    .shop-modal-close:hover {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border-color: rgba(239, 68, 68, 0.4);
+    }
+
+    .shop-modal-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+      text-align: center;
+      background: linear-gradient(135deg, #ffffff 0%, #53fc18 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .shop-modal-desc {
+      font-size: 0.9rem;
+      color: #cbd5e1;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .commands-box {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      font-size: 0.82rem;
+      color: #94a3b8;
+      text-align: center;
+    }
+    .command-item {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    .shop-modal-price {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #53fc18;
+      text-align: center;
+      margin-top: 5px;
+    }
+
+    .buy-btn {
+      display: block;
+      width: 100%;
+      background: linear-gradient(135deg, #53fc18, #16a34a);
+      color: #05070b;
+      font-weight: 800;
+      font-size: 1rem;
+      padding: 14px;
+      border-radius: 14px;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0 0 20px rgba(83, 252, 24, 0.3);
+      transition: all 0.3s ease;
+      margin-top: 10px;
+      border: none;
+    }
+    .buy-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 30px rgba(83, 252, 24, 0.6);
+    }
+
+    /* מצבי נגישות גלובליים */
     body.high-contrast-dark {
       --bg-color: #000000;
       --card-base: #111111;
@@ -103,6 +280,13 @@
       --text-primary: #000000;
       --text-secondary: #333333;
     }
+
+    body.high-saturation * { filter: saturate(2.5); }
+    body.grayscale { filter: grayscale(100%) brightness(var(--brightness-val)); }
+    body.highlight-links a { background-color: yellow !important; color: black !important; outline: 3px solid red !important; }
+    body.pause-motion *, body.pause-motion .star, body.pause-motion .mini-face, body.pause-motion .hero-bg-face, body.pause-motion .mouse-glow { animation: none !important; transition: none !important; }
+    body.focus-mode *:not(:focus):not(body):not(html) { opacity: 0.3; }
+    body.focus-mode *:focus { outline: 4px solid #53fc18 !important; opacity: 1 !important; }
 
     #readingRuler {
       position: fixed;
@@ -119,10 +303,10 @@
 
     .accessibility-btn {
       position: fixed;
-      bottom: 20px;
-      right: 20px;
-      width: 48px;
-      height: 48px;
+      bottom: 25px;
+      right: 25px;
+      width: 54px;
+      height: 54px;
       background: linear-gradient(135deg, #121621, #1e2638);
       border: 2px solid rgba(83, 252, 24, 0.6);
       border-radius: 50%;
@@ -135,14 +319,14 @@
       transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .accessibility-btn:hover { transform: scale(1.12) rotate(15deg); border-color: #53fc18; box-shadow: 0 0 25px rgba(83, 252, 24, 0.5); }
-    .accessibility-btn svg { width: 24px; height: 24px; }
+    .accessibility-btn svg { width: 26px; height: 26px; }
 
     .accessibility-modal {
       position: fixed;
-      bottom: 80px;
-      right: 20px;
+      bottom: 95px;
+      right: 25px;
       width: 380px;
-      max-height: 75vh;
+      max-height: 82vh;
       background: rgba(15, 19, 29, 0.95);
       border: 1px solid rgba(83, 252, 24, 0.3);
       backdrop-filter: blur(16px);
@@ -152,7 +336,7 @@
       z-index: 10001;
       display: flex;
       flex-direction: column;
-      padding: 20px;
+      padding: 24px;
       transform: scale(0.85) translateY(20px);
       opacity: 0;
       visibility: hidden;
@@ -160,23 +344,30 @@
     }
     .accessibility-modal.open { transform: scale(1) translateY(0); opacity: 1; visibility: visible; }
 
-    .acc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 10px; }
-    .acc-header h2 { font-size: 1.15rem !important; font-weight: 800; background: linear-gradient(135deg, #ffffff 0%, #53fc18 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .acc-close { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.2s; }
+    .acc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 12px; }
+    .acc-header h2 { font-size: 1.25rem !important; font-weight: 800; background: linear-gradient(135deg, #ffffff 0%, #53fc18 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .acc-close { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: all 0.2s; }
     .acc-close:hover { background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.4); }
-    .acc-sub { font-size: 0.75rem !important; color: #94a3b8; margin-bottom: 12px; margin-top: 6px; }
-    .acc-body { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; max-height: 55vh; padding-left: 4px; padding-right: 2px; }
+    .acc-sub { font-size: 0.78rem !important; color: #94a3b8; margin-bottom: 16px; margin-top: 8px; }
+    .acc-body { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: calc(70vh - 80px); padding-left: 4px; padding-right: 2px; }
     .acc-body::-webkit-scrollbar { width: 5px; }
     .acc-body::-webkit-scrollbar-thumb { background: rgba(83, 252, 24, 0.3); border-radius: 10px; }
-    .acc-control-group { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; }
-    .acc-control-label { display: flex; justify-content: space-between; font-size: 0.8rem !important; font-weight: 700; color: #e2e8f0; }
-    .acc-slider { width: 100%; accent-color: #53fc18; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; outline: none; }
-    .acc-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .acc-option { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #cbd5e1; padding: 10px 8px; border-radius: 12px; font-size: 0.75rem !important; font-weight: 700; text-align: center; transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .acc-control-group { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 14px; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
+    .acc-control-label { display: flex; justify-content: space-between; font-size: 0.84rem !important; font-weight: 700; color: #e2e8f0; }
+    .acc-slider { width: 100%; accent-color: #53fc18; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; outline: none; }
+    .acc-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .acc-option { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #cbd5e1; padding: 12px 10px; border-radius: 14px; font-size: 0.78rem !important; font-weight: 700; text-align: center; transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; gap: 6px; }
     .acc-option:hover { background: rgba(83, 252, 24, 0.08); border-color: rgba(83, 252, 24, 0.35); color: #ffffff; transform: translateY(-2px); }
     .acc-option.active { background: rgba(83, 252, 24, 0.15); border-color: #53fc18; color: #53fc18; box-shadow: 0 0 12px rgba(83, 252, 24, 0.2); }
-    .acc-reset-btn { background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); color: #f87171; padding: 11px; border-radius: 12px; font-size: 0.78rem !important; font-weight: 700; text-align: center; margin-top: 4px; transition: all 0.2s; }
+    .acc-reset-btn { background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); color: #f87171; padding: 13px; border-radius: 14px; font-size: 0.82rem !important; font-weight: 700; text-align: center; margin-top: 6px; transition: all 0.2s; }
     .acc-reset-btn:hover { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #ffffff; }
+
+    #intro-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: #05070b; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; opacity: 1; transition: opacity 0.6s ease-in-out, visibility 0.6s ease-in-out; }
+    #intro-screen.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
+    .intro-content { display: flex; flex-direction: column; align-items: center; gap: 16px; animation: introZoom 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .intro-logo { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(83, 252, 24, 0.5); box-shadow: 0 0 30px rgba(83, 252, 24, 0.3); }
+    .intro-title { font-size: 2.4rem; font-weight: 800; letter-spacing: 0.05em; background: linear-gradient(180deg, #ffffff 0%, #38bdf8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 0 0 25px rgba(56, 189, 248, 0.4); }
+    @keyframes introZoom { 0% { transform: scale(0.85); opacity: 0; filter: blur(8px); } 100% { transform: scale(1); opacity: 1; filter: blur(0); } }
 
     .mouse-glow { position: fixed; top: 0; left: 0; width: 450px; height: 450px; background: radial-gradient(circle, rgba(255, 255, 255, 0.07) 0%, rgba(56, 189, 248, 0.03) 40%, transparent 70%); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); z-index: 2; transition: width 0.3s, height 0.3s; }
     .stars-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; }
@@ -184,145 +375,76 @@
     @keyframes twinkle { 0%, 100% { opacity: 0.1; transform: scale(0.8); } 50% { opacity: 0.85; transform: scale(1.2); box-shadow: 0 0 6px rgba(255, 255, 255, 0.8); } }
 
     .floating-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; overflow: hidden; }
-    .hero-bg-face { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: clamp(260px, 40vw, 480px); opacity: 0.1; mix-blend-mode: lighten; pointer-events: none; z-index: 1; animation: slowPulse 7s ease-in-out infinite; }
+    .hero-bg-face { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: clamp(280px, 45vw, 520px); opacity: 0.1; mix-blend-mode: lighten; pointer-events: none; z-index: 1; animation: slowPulse 7s ease-in-out infinite; }
     @keyframes slowPulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -52%) scale(1.04); } }
     .mini-face { position: absolute; bottom: -100px; mix-blend-mode: lighten; user-select: none; animation: floatUp linear infinite; }
     @keyframes floatUp { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 15% { opacity: var(--max-opacity); } 85% { opacity: var(--max-opacity); } 100% { transform: translateY(-115vh) rotate(360deg); opacity: 0; } }
 
-    .container { max-width: 680px; width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 10; }
+    .container { max-width: 780px; width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 10; }
 
-    /* פרופיל וכותרת */
-    .profile { text-align: center; margin-bottom: 10px; width: 100%; display: flex; flex-direction: column; align-items: center; }
-    .avatar-wrapper { width: 70px; height: 70px; border-radius: 50%; padding: 2px; background: linear-gradient(135deg, #38bdf8, rgba(255,255,255,0.1)); margin-bottom: 6px; }
+    .profile { text-align: center; margin-bottom: 28px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+    .avatar-wrapper { width: 104px; height: 104px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, #38bdf8, rgba(255,255,255,0.1)); margin: 0 auto 16px; box-shadow: 0 12px 35px rgba(56, 189, 248, 0.25); transition: all 0.4s ease; }
+    .avatar-wrapper.is-live { background: linear-gradient(135deg, var(--kick-green), #16a34a); box-shadow: 0 0 28px rgba(83, 252, 24, 0.45); }
     .avatar { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; background: #000; }
 
-    h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: 0.04em; margin-bottom: 1px; background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .official-subtitle { font-size: 0.7rem; color: #ffffff; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 8px; }
+    h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: 0.04em; margin-bottom: 6px; background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .official-subtitle { font-size: 0.82rem; color: #ffffff; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; margin-bottom: 16px; }
 
-    /* באנר לייב */
-    .live-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(18, 22, 33, 0.85);
-      border: 1px solid rgba(83, 252, 24, 0.4);
-      padding: 6px 16px;
-      border-radius: 30px;
-      font-size: 0.78rem;
-      font-weight: 700;
-      color: #ffffff;
-      text-decoration: none;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.4), 0 0 10px rgba(83, 252, 24, 0.15);
-      margin-bottom: 12px;
-      transition: all 0.3s ease;
-    }
-    .live-badge:hover { transform: translateY(-2px); border-color: #53fc18; box-shadow: 0 6px 20px rgba(83, 252, 24, 0.3); }
-    .live-dot { width: 8px; height: 8px; background-color: #53fc18; border-radius: 50%; box-shadow: 0 0 8px #53fc18; animation: pulseDot 1.5s infinite; }
-    @keyframes pulseDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.85); } }
+    .stream-title-box { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 580px; padding: 13px 24px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.22); border-radius: 16px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); color: #e2e8f0; text-decoration: none; font-size: 0.96rem; font-weight: 700; letter-spacing: 0.01em; transition: all 0.3s ease; margin-bottom: 14px; }
+    .stream-title-box:hover { background: rgba(255, 255, 255, 0.07); border-color: rgba(255, 255, 255, 0.4); transform: translateY(-1px); }
+    .stream-title-box.is-live { border-color: rgba(83, 252, 24, 0.45); background: rgba(83, 252, 24, 0.05); color: #ffffff; box-shadow: 0 0 20px rgba(83, 252, 24, 0.12); }
 
-    /* כרטיסי לינקים */
-    .links-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 100%;
-    }
+    .bio { font-size: 0.84rem; color: var(--text-secondary); font-weight: 400; letter-spacing: 0.06em; }
 
-    .link-row {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      width: 100%;
-    }
+    .links-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; width: 100%; }
+    .span-full { grid-column: span 2; }
+    .section-divider { grid-column: span 2; height: 1px; background: linear-gradient(90deg, transparent 0%, rgba(83, 252, 24, 0.45) 50%, transparent 100%); box-shadow: 0 0 12px rgba(83, 252, 24, 0.25); margin: 4px 0; }
 
-    .link-card {
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.07) 0%, var(--card-base) 80%);
-      border: 1px solid rgba(56, 189, 248, 0.25);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      padding: 12px 16px;
-      border-radius: 14px;
-      color: var(--text-primary);
-      text-decoration: none;
-      box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.6);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      position: relative;
-    }
+    .link-card { display: flex; align-items: center; background: var(--card-base); border: 1px solid rgba(255, 255, 255, 0.1); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); padding: 14px 18px; border-radius: 20px; text-decoration: none; color: var(--text-primary); box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.65), 0 4px 12px rgba(0, 0, 0, 0.4); transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); position: relative; }
+    .link-card:hover { transform: translateY(-3px); }
+    .card-right-col { flex-direction: row-reverse; }
+    .card-left-col { flex-direction: row; }
 
-    .link-card.kick-card {
-      grid-column: span 2;
-      background: linear-gradient(135deg, rgba(83, 252, 24, 0.12) 0%, var(--card-base) 80%);
-      border-color: rgba(83, 252, 24, 0.4);
+    .link-icon { width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(255, 255, 255, 0.08); transition: transform 0.3s ease; flex-shrink: 0; }
+    .link-icon svg { width: 24px; height: 24px; }
+    .link-card:hover .link-icon { transform: scale(1.06); }
+
+    .link-text-group { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 12px; gap: 3px; }
+    .link-title { font-size: 1.05rem; font-weight: 700; }
+    .link-subtitle { font-size: 0.78rem; color: var(--text-secondary); }
+
+    .card-kick { background: linear-gradient(135deg, rgba(83, 252, 24, 0.09) 0%, var(--card-base) 72%); border-color: rgba(83, 252, 24, 0.28); }
+    .card-kick .link-icon { background: rgba(83, 252, 24, 0.12); border-color: rgba(83, 252, 24, 0.28); color: #53fc18; }
+    .card-kick .link-icon svg { width: 30px; height: auto; }
+    .card-kick:hover { border-color: rgba(83, 252, 24, 0.6); box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(83, 252, 24, 0.22); }
+
+    .card-gold { background: linear-gradient(135deg, rgba(212, 155, 84, 0.1) 0%, var(--card-base) 72%); border-color: rgba(212, 155, 84, 0.28); }
+    .card-gold .link-icon { background: rgba(212, 155, 84, 0.13); border-color: rgba(212, 155, 84, 0.28); color: #d49b54; }
+    .card-gold:hover { border-color: rgba(212, 155, 84, 0.6); box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(212, 155, 84, 0.2); }
+
+    .card-youtube { background: linear-gradient(135deg, rgba(225, 75, 86, 0.09) 0%, var(--card-base) 72%); border-color: rgba(225, 75, 86, 0.24); }
+    .card-youtube .link-icon { background: rgba(225, 75, 86, 0.12); border-color: rgba(225, 75, 86, 0.26); color: #d9535f; }
+    .card-youtube:hover { border-color: rgba(225, 75, 86, 0.55); box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(225, 75, 86, 0.18); }
+
+    .card-tiktok { background: linear-gradient(135deg, rgba(45, 168, 184, 0.1) 0%, var(--card-base) 72%); border-color: rgba(45, 168, 184, 0.25); }
+    .card-tiktok .link-icon { background: rgba(45, 168, 184, 0.13); border-color: rgba(45, 168, 184, 0.28); color: #36b5c5; }
+    .card-tiktok:hover { border-color: rgba(45, 168, 184, 0.45); box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 18px rgba(45, 168, 184, 0.15); }
+
+    .card-instagram { background: linear-gradient(135deg, rgba(196, 108, 155, 0.09) 0%, var(--card-base) 72%); border-color: rgba(196, 108, 155, 0.24); }
+    .card-instagram .link-icon { background: rgba(196, 108, 155, 0.12); border-color: rgba(196, 108, 155, 0.26); color: #c86d9d; }
+    .card-instagram:hover { border-color: rgba(196, 108, 155, 0.55); box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(196, 108, 155, 0.18); }
+
+    .card-discord { background: linear-gradient(135deg, rgba(108, 132, 212, 0.1) 0%, var(--card-base) 72%); border-color: rgba(108, 132, 212, 0.26); }
+    .card-discord .link-icon { background: rgba(108, 132, 212, 0.13); border-color: rgba(108, 132, 212, 0.28); color: #7289da; }
+    .card-discord:hover { border-color: rgba(108, 132, 212, 0.58); box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(108, 132, 212, 0.2); }
+
+    @media (max-width: 640px) {
+      .links-grid { grid-template-columns: 1fr; }
+      .span-full, .section-divider { grid-column: span 1; }
+      .card-right-col, .card-left-col { flex-direction: row; }
     }
 
-    .link-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(56, 189, 248, 0.6);
-      box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.7), 0 0 15px rgba(56, 189, 248, 0.2);
-    }
-
-    .link-card.kick-card:hover {
-      border-color: #53fc18;
-      box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.7), 0 0 20px rgba(83, 252, 24, 0.3);
-    }
-
-    .link-info {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .link-title {
-      font-size: 0.92rem;
-      font-weight: 800;
-      color: #ffffff;
-    }
-
-    .link-desc {
-      font-size: 0.73rem;
-      color: var(--text-secondary);
-    }
-
-    .link-icon {
-      font-size: 1.15rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 32px;
-      height: 32px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 8px;
-    }
-
-    .kick-tag {
-      background: rgba(83, 252, 24, 0.15);
-      color: #53fc18;
-      border: 1px solid rgba(83, 252, 24, 0.4);
-      padding: 3px 10px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      font-weight: 800;
-      letter-spacing: 0.05em;
-    }
-
-    @media (max-width: 600px) {
-      .link-row {
-        grid-template-columns: 1fr;
-      }
-      .link-card.kick-card {
-        grid-column: span 1;
-      }
-      body {
-        height: auto;
-        max-height: none;
-        overflow-y: auto;
-      }
-    }
-
-    .footer { font-size: 0.68rem; color: var(--text-secondary); letter-spacing: 0.05em; opacity: 0.7; margin-top: 8px; }
+    .footer { margin-top: 45px; font-size: 0.75rem; color: var(--text-secondary); letter-spacing: 0.05em; opacity: 0.7; }
   </style>
 </head>
 <body>
@@ -367,105 +489,262 @@
     </div>
   </div>
 
+  <div id="intro-screen">
+    <div class="intro-content">
+      <img src="logo.png" alt="DrFishyQw" class="intro-logo">
+      <div class="intro-title">DrFishyQw</div>
+    </div>
+  </div>
+
   <div class="mouse-glow" id="mouseGlow"></div>
   <div class="stars-bg" id="starsBg"></div>
   <img src="face.png" alt="" class="hero-bg-face">
   <div class="floating-bg" id="floatingBg"></div>
 
-  <div class="container">
-    <nav class="nav-tabs">
-      <a href="index.html" class="nav-tab active">HOME</a>
-      <a href="shop.html" class="nav-tab">Fishy's Shop</a>
-    </nav>
-
-    <header class="profile">
-      <div class="avatar-wrapper">
-        <img src="logo.png" alt="DrFishyQw" class="avatar">
+  <!-- חלון מידע וקנייה - בוט דיסקורד -->
+  <div class="shop-modal-overlay" id="modalDiscordBot">
+    <div class="shop-modal-content">
+      <button class="shop-modal-close" data-close="modalDiscordBot">✕</button>
+      <div class="shop-modal-title">Discord Bot</div>
+      <div class="shop-modal-desc">
+        בוט אישי בעיצוב אישי לשרת הדיסקורד שלכם !<br>
+        מגוון פקודות ניהול/ציבוריות.<br>
+        <strong>דוגמאות לפקודות:</strong>
       </div>
-      <h1>DrFishyQw</h1>
-      <p class="official-subtitle">Creator • Streamer • Community</p>
-    </header>
-
-    <a href="https://kick.com/drfishyqw" target="_blank" class="live-badge">
-      <span class="live-dot"></span>
-      לא בשידור כרגע • לחצו לעבר לשידור ב-Kick
-    </a>
+      <div class="commands-box">
+        <div class="command-item">Tickets System +</div>
+        <div class="command-item">Giveaways System +</div>
+        <div class="command-item">Stream Alerts +</div>
+        <div class="command-item">Server Logs +</div>
+        <div class="command-item">AI Moderator +</div>
+        <div class="command-item">Custom Commands +</div>
+        <div class="command-item">Verification System +</div>
+        <div class="command-item">Welcome System +</div>
+        <div class="command-item">Memes Commands +</div>
+        <div class="command-item">Levels System +</div>
+      </div>
+      <div class="shop-modal-desc" style="font-size: 0.78rem; opacity: 0.8;">
+        ועוד מגוון פקודות / מערכות שתרצו להוסיף !
+      </div>
+      <div class="shop-modal-price">מחיר: 55 ₪ תשלום ראשוני + 10 ₪ בחודש</div>
+      <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="buy-btn">רכישה / הזמנה</a>
+    </div>
   </div>
 
-  <main class="container" style="width: 100%;">
-    <div class="links-grid">
-      
-      <!-- Kick Card -->
-      <a href="https://kick.com/drfishyqw" target="_blank" class="link-card kick-card">
-        <div class="link-info">
-          <span class="link-title">Kick</span>
-          <span class="link-desc">ערוץ הקיק של פישי</span>
-        </div>
-        <span class="kick-tag">KICK</span>
-      </a>
-
-      <!-- Row 2 -->
-      <div class="link-row">
-        <a href="https://youtube.com/@drfishyqw" target="_blank" class="link-card">
-          <div class="link-info">
-            <span class="link-title">YouTube Clips</span>
-            <span class="link-desc">קטעים נבחרים מהלייבים</span>
-          </div>
-          <span class="link-icon">📺</span>
-        </a>
-        <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="link-card">
-          <div class="link-info">
-            <span class="link-title">Game2Earn Community</span>
-            <span class="link-desc">הצטרפו כדי להרוויח כסף</span>
-          </div>
-          <span class="link-icon">💰</span>
-        </a>
+  <!-- חלון מידע וקנייה - אתר לינקים -->
+  <div class="shop-modal-overlay" id="modalLinksWebsite">
+    <div class="shop-modal-content">
+      <button class="shop-modal-close" data-close="modalLinksWebsite">✕</button>
+      <div class="shop-modal-title">Links Website</div>
+      <div class="shop-modal-desc">
+        אתר מעוצב אישית לבקשתכם המרכז את כל הלינקים החשובים שלכם למדיה החברתית.<br><br>
+        אתר מעוצב אישית לבקשתכם, שמכיל את כל הלינקים שחשובים לכם להפיץ במדיה החברתית בצורה נקיאה, מרשימה ומותאמת אישית לצרכים שלכם.<br><br>
+        <strong>שימו לב!</strong> כתובת האתר תהיה ברירת מחדל של GITHUB, כתובת אתר אישית מגיעה בתוספת תשלום בהתאם לכתובת שתרצו.
       </div>
-
-      <!-- Row 3 -->
-      <div class="link-row">
-        <a href="https://instagram.com" target="_blank" class="link-card">
-          <div class="link-info">
-            <span class="link-title">Instagram</span>
-            <span class="link-desc">עקבו אחרי פישי באינסטגרם</span>
-          </div>
-          <span class="link-icon">📸</span>
-        </a>
-        <a href="https://tiktok.com" target="_blank" class="link-card">
-          <div class="link-info">
-            <span class="link-title">TikTok</span>
-            <span class="link-desc">העמוד הרשמי בטיקטוק</span>
-          </div>
-          <span class="link-icon">🎵</span>
-        </a>
-      </div>
-
-      <!-- Row 4 -->
-      <div class="link-row">
-        <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="link-card">
-          <div class="link-info">
-            <span class="link-title">Discord</span>
-            <span class="link-desc">שרת הדיסקורד של פישי</span>
-          </div>
-          <span class="link-icon">💬</span>
-        </a>
-        <a href="https://paypal.com" target="_blank" class="link-card">
-          <div class="link-info">
-            <span class="link-title">תרומות</span>
-            <span class="link-desc">מוזמנים לתרום כאן</span>
-          </div>
-          <span class="link-icon">❤️</span>
-        </a>
-      </div>
-
+      <div class="shop-modal-price">מחיר: 99 ₪ תשלום חד פעמי</div>
+      <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="buy-btn">רכישה / הזמנה</a>
     </div>
-  </main>
+  </div>
 
-  <footer class="footer">
-    © 2026 DRFISHYQW. All rights reserved.
-  </footer>
+  <div class="container">
+    <!-- תפריט ניווט עליון -->
+    <nav class="nav-tabs">
+      <button class="nav-tab active" data-target="home-view">HOME</button>
+      <button class="nav-tab" data-target="shop-view">Fishy's Shop</button>
+    </nav>
+
+    <!-- קו הפרדה מואר ואנימטיבי בדיוק במיקום שביקשת -->
+    <div class="header-divider"></div>
+
+    <!-- ================= עמוד הבית (HOME) ================= -->
+    <div id="home-view" class="view-section active-view">
+      <header class="profile">
+        <div class="avatar-wrapper" id="avatarWrapper">
+          <img src="logo.png" alt="DrFishyQw" class="avatar">
+        </div>
+        <h1>DrFishyQw</h1>
+        <p class="official-subtitle">OFFICIAL LINKS</p>
+
+        <a href="https://kick.com/drfishyqw" target="_blank" class="stream-title-box" id="streamTitleBox">
+          <span id="streamTitleText">טוען סטטוס שידור...</span>
+        </a>
+
+        <p class="bio">Creator • Streamer • Community</p>
+      </header>
+
+      <main class="links-grid">
+        <a href="https://kick.com/drfishyqw" target="_blank" class="link-card card-kick card-left-col span-full" id="kickCard">
+          <div class="link-icon">
+            <svg viewBox="0 0 933 300" fill="currentColor" aria-hidden="true">
+              <path d="M0 0h100v100h50V50h50V0h100v100h-50v50h-50v50h50v50h50v100H200v-50h-50v-50h-50v100H0V0zm350 0h100v300H350V0zm150 0h250v100H600v100h150v100H500V0zm300 0h100v100h50V50h50V0h100v100h-50v50h-50v50h50v50h50v100H950v-50h-50v-50h-50v100H800V0z" transform="scale(0.848, 1)"/>
+            </svg>
+          </div>
+          <div class="link-text-group">
+            <span class="link-title">Kick</span>
+            <span class="link-subtitle" id="kickSubtitle">ערוץ הקיק של פישי</span>
+          </div>
+        </a>
+
+        <div class="section-divider"></div>
+
+        <a href="https://discord.gg/QYRdGG52Td" target="_blank" class="link-card card-gold card-right-col">
+          <div class="link-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="2" x2="12" y2="22"></line>
+              <path d="M17 6H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+          </div>
+          <div class="link-text-group">
+            <span class="link-title">Game2Earn Community</span>
+            <span class="link-subtitle">היכנסו כדי להרוויח כסף</span>
+          </div>
+        </a>
+
+        <a href="https://www.youtube.com/@drfishyqw" target="_blank" class="link-card card-youtube card-left-col">
+          <div class="link-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+            </svg>
+          </div>
+          <div class="link-text-group">
+            <span class="link-title">YouTube Clips</span>
+            <span class="link-subtitle">קטעים נבחרים מהלייבים</span>
+          </div>
+        </a>
+
+        <div class="link-card card-tiktok card-right-col">
+          <div class="link-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+            </svg>
+          </div>
+          <div class="link-text-group">
+            <span class="link-title">TikTok</span>
+            <span class="link-subtitle">העמוד נפתח בקרוב!</span>
+          </div>
+        </div>
+
+        <a href="https://www.instagram.com/_shahar_shimon/" target="_blank" class="link-card card-instagram card-left-col">
+          <div class="link-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </div>
+          <div class="link-text-group">
+            <span class="link-title">Instagram</span>
+            <span class="link-subtitle">עקבו אחרי פישי באינסטגרם</span>
+          </div>
+        </a>
+
+        <a href="https://streamelements.com/drfishyqw-6cc8f/tip" target="_blank" class="link-card card-gold card-right-col">
+          <div class="link-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </div>
+          <div class="link-text-group">
+            <span class="link-title">תרומות</span>
+            <span class="link-subtitle">מוזמנים לתרום כאן</span>
+          </div>
+        </a>
+
+        <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="link-card card-discord card-left-col">
+          <div class="link-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/>
+            </svg>
+          </div>
+          <div class="link-text-group">
+            <span class="link-title">Discord</span>
+            <span class="link-subtitle">שרת הדיסקורד של פישי</span>
+          </div>
+        </a>
+      </main>
+    </div>
+
+    <!-- ================= עמוד החנות (SHOP) ================= -->
+    <div id="shop-view" class="view-section">
+      <header class="profile">
+        <div class="avatar-wrapper">
+          <img src="logo.png" alt="DrFishyQw" class="avatar">
+        </div>
+        <h1>DrFishyQw</h1>
+        <p class="official-subtitle">STORE & PACKAGES</p>
+        <p class="bio">DrFishy is here for you, check out what he has to offer</p>
+      </header>
+
+      <main class="links-grid">
+        <!-- כרטיס אתר לינקים -->
+        <div class="link-card card-kick card-left-col" id="openLinksModal" style="cursor: pointer;">
+          <div class="link-icon">🌐</div>
+          <div class="link-text-group">
+            <span class="link-title">Links Website</span>
+            <span class="link-subtitle">אתר מעוצב אישית לבקשתכם המרכז את כל הלינקים החשובים שלכם למדיה החברתית</span>
+          </div>
+        </div>
+
+        <!-- כרטיס בוט דיסקורד -->
+        <div class="link-card card-discord card-right-col" id="openBotModal" style="cursor: pointer;">
+          <div class="link-icon">🤖</div>
+          <div class="link-text-group">
+            <span class="link-title">Discord Bot</span>
+            <span class="link-subtitle">בוט אישי בעיצוב אישי לשרת הדיסקורד שלכם</span>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      © 2026 DRFISHYQW. All rights reserved.
+    </footer>
+  </div>
 
   <script>
+    // ניהול מעבר חלק בין עמודות (SPA)
+    const navTabs = document.querySelectorAll('.nav-tab');
+    const views = document.querySelectorAll('.view-section');
+
+    navTabs.forEach(tab => {
+      tab.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetId = tab.getAttribute('data-target');
+
+        navTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+
+        views.forEach(v => {
+          v.classList.remove('active-view');
+          if (v.id === targetId) {
+            v.classList.add('active-view');
+          }
+        });
+      });
+    });
+
+    // ניהול חלונות מודל לחנות
+    const botModal = document.getElementById('modalDiscordBot');
+    const linksModal = document.getElementById('modalLinksWebsite');
+
+    document.getElementById('openBotModal').addEventListener('click', () => {
+      botModal.classList.add('open');
+    });
+
+    document.getElementById('openLinksModal').addEventListener('click', () => {
+      linksModal.classList.add('open');
+    });
+
+    document.querySelectorAll('.shop-modal-close').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetId = btn.getAttribute('data-close');
+        document.getElementById(targetId).classList.remove('open');
+      });
+    });
+
+    window.addEventListener('click', (e) => {
+      if (e.target === botModal) botModal.classList.remove('open');
+      if (e.target === linksModal) linksModal.classList.remove('open');
+    });
+
     const accToggleBtn = document.getElementById('accToggleBtn');
     const accModal = document.getElementById('accModal');
     const accCloseBtn = document.getElementById('accCloseBtn');
@@ -516,6 +795,75 @@
         }
       });
     });
+
+    window.addEventListener('mousemove', (e) => {
+      const ruler = document.getElementById('readingRuler');
+      if (ruler.style.display === 'block') ruler.style.top = (e.clientY - 20) + 'px';
+    });
+
+    accResetBtn.addEventListener('click', () => {
+      document.body.className = '';
+      document.documentElement.style.setProperty('--font-scale', '1');
+      document.documentElement.style.setProperty('--brightness-val', '1');
+      document.documentElement.style.setProperty('--line-height-val', 'normal');
+      document.documentElement.style.setProperty('--letter-spacing-val', 'normal');
+      fontSizeSlider.value = 100; fontSizeVal.textContent = '100%';
+      brightnessSlider.value = 100; brightnessVal.textContent = '100%';
+      document.getElementById('readingRuler').style.display = 'none';
+      options.forEach(b => b.classList.remove('active'));
+    });
+
+    // אינטרו מופיע פעם אחת בלבד בכניסה הראשונה
+    window.addEventListener('load', () => {
+      const intro = document.getElementById('intro-screen');
+      if (intro) {
+        if (!sessionStorage.getItem('visited')) {
+          sessionStorage.setItem('visited', 'true');
+          setTimeout(() => {
+            intro.classList.add('fade-out');
+          }, 1200);
+        } else {
+          intro.style.display = 'none';
+        }
+      }
+    });
+
+    const KICK_USERNAME = 'drfishyqw';
+    async function fetchKickChannelData(username) {
+      const targetUrl = `https://kick.com/api/v2/channels/${username}`;
+      const endpoints = [targetUrl, `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`, `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`];
+      for (const url of endpoints) {
+        try {
+          const response = await fetch(url);
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data.id) return data;
+          }
+        } catch (e) {}
+      }
+      return null;
+    }
+
+    async function checkKickLiveStatus() {
+      const box = document.getElementById('streamTitleBox');
+      const titleEl = document.getElementById('streamTitleText');
+      const avatarWrapper = document.getElementById('avatarWrapper');
+      const kickSubtitle = document.getElementById('kickSubtitle');
+      const data = await fetchKickChannelData(KICK_USERNAME);
+
+      if (data && data.livestream) {
+        titleEl.textContent = data.livestream.session_title || 'בשידור חי עכשיו ב-Kick!';
+        box.classList.add('is-live'); avatarWrapper.classList.add('is-live');
+        kickSubtitle.textContent = `בשידור חי (${data.livestream.viewer_count} צופים)`;
+      } else {
+        const lastTitle = data?.previous_livestreams?.[0]?.session_title;
+        titleEl.textContent = lastTitle || 'לא בשידור כרגע • לחצו למעבר לערוץ ב-Kick';
+        box.classList.remove('is-live'); avatarWrapper.classList.remove('is-live');
+        kickSubtitle.textContent = 'ערוץ הקיק של פישי';
+      }
+    }
+    checkKickLiveStatus();
+    setInterval(checkKickLiveStatus, 45000);
 
     const glow = document.getElementById('mouseGlow');
     window.addEventListener('mousemove', (e) => { glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px'; });
