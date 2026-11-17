@@ -131,139 +131,300 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* חלונות מודל (Modals) לקנייה ומידע */
+    /* ===== חלונות החנות (Shop Modals) ===== */
     .shop-modal-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(5, 7, 11, 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      inset: 0;
+      padding: 16px;
+      background: rgba(3, 5, 9, 0.78);
+      backdrop-filter: blur(14px) saturate(120%);
+      -webkit-backdrop-filter: blur(14px) saturate(120%);
       z-index: 20000;
       display: flex;
       align-items: center;
       justify-content: center;
       opacity: 0;
       visibility: hidden;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 0.35s ease, visibility 0.35s ease;
     }
+    .shop-modal-overlay.open { opacity: 1; visibility: visible; }
 
-    .shop-modal-overlay.open {
-      opacity: 1;
-      visibility: visible;
-    }
-
+    /* צבע מבטא לכל חלון: ירוק לאתר, סגול-דיסקורד לבוט */
     .shop-modal-content {
-      background: rgba(15, 19, 29, 0.95);
-      border: 1px solid rgba(83, 252, 24, 0.4);
-      border-radius: 20px;
-      width: 90%;
-      max-width: 600px;
-      max-height: 85vh;
+      --accent: #53fc18;
+      --accent-rgb: 83, 252, 24;
+      --btn-from: #53fc18;
+      --btn-to: #1fb84a;
+      --on-accent: #04130a;
+      position: relative;
+      isolation: isolate;
+      width: 100%;
+      max-width: 560px;
+      max-height: min(88vh, 900px);
       overflow-y: auto;
-      padding: 30px;
-      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9), 0 0 30px rgba(83, 252, 24, 0.15);
+      overscroll-behavior: contain;
+      padding: 34px 30px 24px;
+      border-radius: 28px;
+      border: 1px solid transparent;
+      background:
+        radial-gradient(130% 55% at 50% -5%, rgba(var(--accent-rgb), 0.17) 0%, transparent 62%) padding-box,
+        linear-gradient(180deg, rgba(16, 21, 32, 0.98) 0%, rgba(8, 11, 18, 0.99) 100%) padding-box,
+        linear-gradient(160deg, rgba(var(--accent-rgb), 0.7) 0%, rgba(255, 255, 255, 0.07) 38%, rgba(255, 255, 255, 0.04) 62%, rgba(var(--accent-rgb), 0.35) 100%) border-box;
+      box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.95), 0 0 70px -15px rgba(var(--accent-rgb), 0.35);
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      position: relative;
-      transform: scale(0.9);
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      gap: 18px;
+      text-align: center;
+      transform: translateY(28px) scale(0.96);
+      opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(var(--accent-rgb), 0.35) transparent;
     }
+    .shop-modal-content.accent-discord {
+      --accent: #8c9bff;
+      --accent-rgb: 140, 155, 255;
+      --btn-from: #6370f5;
+      --btn-to: #4450c9;
+      --on-accent: #ffffff;
+    }
+    .shop-modal-content::-webkit-scrollbar { width: 6px; }
+    .shop-modal-content::-webkit-scrollbar-thumb { background: rgba(var(--accent-rgb), 0.35); border-radius: 10px; }
+    /* רשת נקודות עדינה בראש החלון */
+    .shop-modal-content::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: inherit;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1.4px);
+      background-size: 18px 18px;
+      -webkit-mask-image: linear-gradient(180deg, #000 0%, transparent 38%);
+      mask-image: linear-gradient(180deg, #000 0%, transparent 38%);
+      pointer-events: none;
+    }
+    .shop-modal-overlay.open .shop-modal-content { transform: translateY(0) scale(1); opacity: 1; }
 
-    .shop-modal-overlay.open .shop-modal-content {
-      transform: scale(1);
-    }
+    .ico { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .ico-fill { fill: currentColor; stroke: none; }
 
     .shop-modal-close {
       position: absolute;
-      top: 20px;
-      left: 20px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      color: #94a3b8;
-      width: 36px;
-      height: 36px;
+      top: 18px;
+      left: 18px;
+      z-index: 2;
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
+      display: grid;
+      place-items: center;
+      color: #94a3b8;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .shop-modal-close svg { width: 18px; height: 18px; }
+    .shop-modal-close:hover { color: #ffffff; background: rgba(255, 255, 255, 0.12); border-color: rgba(255, 255, 255, 0.25); transform: rotate(90deg); }
+    .shop-modal-close:focus-visible, .buy-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+    .sm-hero { display: flex; flex-direction: column; align-items: center; gap: 10px; padding-top: 4px; }
+    .sm-icon {
+      width: 68px;
+      height: 68px;
+      margin-bottom: 4px;
+      border-radius: 20px;
+      display: grid;
+      place-items: center;
+      color: var(--accent);
+      background: linear-gradient(145deg, rgba(var(--accent-rgb), 0.24), rgba(var(--accent-rgb), 0.05));
+      border: 1px solid rgba(var(--accent-rgb), 0.45);
+      box-shadow: 0 0 0 6px rgba(var(--accent-rgb), 0.06), 0 14px 32px -8px rgba(var(--accent-rgb), 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+    .sm-icon svg { width: 32px; height: 32px; }
+    .sm-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 5px 12px;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--accent);
+      background: rgba(var(--accent-rgb), 0.1);
+      border: 1px solid rgba(var(--accent-rgb), 0.3);
+    }
+    .sm-badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+    .shop-modal-title {
+      font-size: 1.9rem;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: 0.01em;
+      background: linear-gradient(180deg, #ffffff 35%, var(--accent) 150%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .sm-tagline { max-width: 420px; font-size: 0.93rem; line-height: 1.7; color: #a7b2c4; }
+
+    .sm-label { display: flex; align-items: center; gap: 12px; font-size: 0.76rem; font-weight: 700; color: #7f8ba0; letter-spacing: 0.04em; }
+    .sm-label::before, .sm-label::after { content: ""; flex: 1; height: 1px; }
+    .sm-label::before { background: linear-gradient(90deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0)); }
+    .sm-label::after { background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.13)); }
+
+    .sm-chip-icon {
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      color: var(--accent);
+      background: rgba(var(--accent-rgb), 0.1);
+      border: 1px solid rgba(var(--accent-rgb), 0.22);
+    }
+    .sm-chip-icon svg { width: 19px; height: 19px; }
+
+    .sm-features { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .sm-features li {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 13px 16px;
+      border-radius: 16px;
+      text-align: right;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.065);
+      transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+    }
+    .sm-features li:hover { border-color: rgba(var(--accent-rgb), 0.35); background: rgba(var(--accent-rgb), 0.05); transform: translateX(-3px); }
+    .sm-feat-text { display: flex; flex-direction: column; gap: 2px; }
+    .sm-feat-text strong { font-size: 0.93rem; font-weight: 700; color: #f1f5f9; }
+    .sm-feat-text span { font-size: 0.8rem; line-height: 1.5; color: #8b97aa; }
+
+    .commands-box { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .command-item {
+      direction: ltr;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      text-align: left;
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: #e2e8f0;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid rgba(255, 255, 255, 0.065);
+      transition: border-color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+    }
+    .command-item:hover { border-color: rgba(var(--accent-rgb), 0.4); background: rgba(var(--accent-rgb), 0.06); transform: translateY(-2px); }
+    .command-item .sm-chip-icon { width: 30px; height: 30px; border-radius: 9px; }
+    .command-item .sm-chip-icon svg { width: 16px; height: 16px; }
+    .sm-more { margin-top: -6px; font-size: 0.8rem; color: #8b97aa; }
+    .sm-more b { color: var(--accent); }
+
+    .sm-note {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      text-align: right;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: #e5d8b8;
+      background: rgba(251, 191, 36, 0.06);
+      border: 1px solid rgba(251, 191, 36, 0.22);
+    }
+    .sm-note svg { flex-shrink: 0; width: 18px; height: 18px; margin-top: 2px; color: #fbbf24; }
+    .sm-note strong { color: #fcd34d; }
+
+    .sm-pricing { display: flex; align-items: stretch; gap: 10px; }
+    .sm-price-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 16px 12px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(var(--accent-rgb), 0.12) 0%, rgba(var(--accent-rgb), 0.03) 100%);
+      border: 1px solid rgba(var(--accent-rgb), 0.32);
+    }
+    .sm-price-box.is-secondary { background: rgba(255, 255, 255, 0.025); border-color: rgba(255, 255, 255, 0.08); }
+    .sm-amount { direction: ltr; display: inline-flex; align-items: baseline; gap: 4px; font-size: 2.2rem; font-weight: 800; line-height: 1; color: #ffffff; }
+    .sm-amount small { font-size: 1.05rem; font-weight: 700; color: var(--accent); }
+    .sm-price-box.is-secondary .sm-amount { font-size: 1.7rem; }
+    .sm-price-box.is-secondary .sm-amount small { color: #a7b2c4; }
+    .sm-price-label { font-size: 0.78rem; font-weight: 600; color: #9aa6b8; }
+    .sm-plus { align-self: center; font-size: 1.2rem; font-weight: 800; color: var(--accent); }
+
+    .buy-btn {
+      position: relative;
+      overflow: hidden;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
-      transition: all 0.2s;
-    }
-    .shop-modal-close:hover {
-      background: rgba(239, 68, 68, 0.2);
-      color: #ef4444;
-      border-color: rgba(239, 68, 68, 0.4);
-    }
-
-    .shop-modal-title {
-      font-size: 1.5rem;
-      font-weight: 800;
-      color: #fff;
-      text-align: center;
-      background: linear-gradient(135deg, #ffffff 0%, #53fc18 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .shop-modal-desc {
-      font-size: 0.9rem;
-      color: #cbd5e1;
-      text-align: center;
-      line-height: 1.6;
-    }
-
-    .commands-box {
-      background: rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 14px;
-      padding: 16px;
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
-      font-size: 0.82rem;
-      color: #94a3b8;
-      text-align: center;
-    }
-    .command-item {
-      background: rgba(255, 255, 255, 0.03);
-      padding: 8px 10px;
-      border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      color: #e2e8f0;
-      font-weight: 600;
-    }
-
-    .shop-modal-price {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #53fc18;
-      text-align: center;
-      margin-top: 5px;
-    }
-
-    .buy-btn {
-      display: block;
       width: 100%;
-      background: linear-gradient(135deg, #53fc18, #16a34a);
-      color: #05070b;
-      font-weight: 800;
-      font-size: 1rem;
-      padding: 14px;
-      border-radius: 14px;
-      text-align: center;
-      text-decoration: none;
-      box-shadow: 0 0 20px rgba(83, 252, 24, 0.3);
-      transition: all 0.3s ease;
-      margin-top: 10px;
+      padding: 16px 20px;
       border: none;
+      border-radius: 16px;
+      font-size: 1.02rem;
+      font-weight: 800;
+      color: var(--on-accent);
+      text-decoration: none;
+      background: linear-gradient(135deg, var(--btn-from), var(--btn-to));
+      box-shadow: 0 14px 34px -10px rgba(var(--accent-rgb), 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
     }
-    .buy-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 0 30px rgba(83, 252, 24, 0.6);
+    .buy-btn::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -60%;
+      width: 45%;
+      background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transform: skewX(-20deg);
+      animation: smShine 3.4s ease-in-out infinite;
+      pointer-events: none;
+    }
+    .buy-btn:hover { transform: translateY(-2px); filter: brightness(1.06); box-shadow: 0 20px 44px -10px rgba(var(--accent-rgb), 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.35); }
+    .buy-btn:active { transform: translateY(0); }
+    .buy-btn svg { width: 20px; height: 20px; }
+    .sm-footnote { margin-top: -8px; font-size: 0.74rem; color: #6f7b8f; }
+
+    @keyframes smShine { 0%, 55% { left: -60%; } 100% { left: 130%; } }
+    @keyframes smRise { from { opacity: 0; translate: 0 12px; } to { opacity: 1; translate: 0 0; } }
+
+    /* כניסה מדורגת של התוכן כשהחלון נפתח */
+    .shop-modal-overlay.open .shop-modal-content > :not(.shop-modal-close) { animation: smRise 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+    .shop-modal-overlay.open .shop-modal-content > :nth-child(3) { animation-delay: 0.06s; }
+    .shop-modal-overlay.open .shop-modal-content > :nth-child(4) { animation-delay: 0.1s; }
+    .shop-modal-overlay.open .shop-modal-content > :nth-child(5) { animation-delay: 0.14s; }
+    .shop-modal-overlay.open .shop-modal-content > :nth-child(6) { animation-delay: 0.18s; }
+    .shop-modal-overlay.open .shop-modal-content > :nth-child(7) { animation-delay: 0.22s; }
+    .shop-modal-overlay.open .shop-modal-content > :nth-child(8) { animation-delay: 0.26s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .shop-modal-content { transform: none; transition: opacity 0.2s ease; }
+      .shop-modal-overlay.open .shop-modal-content > * { animation: none; }
+      .buy-btn::after { display: none; }
+    }
+
+    @media (max-width: 480px) {
+      .shop-modal-content { padding: 28px 18px 20px; border-radius: 24px; gap: 16px; }
+      .shop-modal-close { top: 14px; left: 14px; }
+      .shop-modal-title { font-size: 1.6rem; }
+      .sm-icon { width: 60px; height: 60px; border-radius: 18px; }
+      .commands-box { gap: 8px; }
+      .command-item { gap: 8px; padding: 9px 10px; font-size: 0.78rem; }
+      .command-item .sm-chip-icon { width: 26px; height: 26px; border-radius: 8px; }
+      .command-item .sm-chip-icon svg { width: 14px; height: 14px; }
+      .sm-amount { font-size: 1.9rem; }
+      .sm-price-box.is-secondary .sm-amount { font-size: 1.5rem; }
     }
 
     /* מצבי נגישות גלובליים */
@@ -501,48 +662,119 @@
   <img src="face.png" alt="" class="hero-bg-face">
   <div class="floating-bg" id="floatingBg"></div>
 
+  <!-- אייקונים לחלונות החנות -->
+  <svg width="0" height="0" style="position: absolute;" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></symbol>
+      <symbol id="i-bot" viewBox="0 0 24 24"><path d="M12 8V4H8"/><rect x="4" y="8" width="16" height="12" rx="2"/><path d="M2 14h2M20 14h2M15 13v2M9 13v2"/></symbol>
+      <symbol id="i-close" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+      <symbol id="i-wand" viewBox="0 0 24 24"><path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8 19 13M15 9h.01M17.8 6.2 19 5M3 21l9-9M12.2 6.2 11 5"/></symbol>
+      <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+      <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+      <symbol id="i-ticket" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v2a2 2 0 0 0 0 4v2a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-2a2 2 0 0 0 0-4z"/><path d="M13 5v2M13 11v2M13 17v2"/></symbol>
+      <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13"/><path d="M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7"/><path d="M7.5 8a2.5 2.5 0 0 1 0-5C11 3 12 8 12 8s1-5 4.5-5a2.5 2.5 0 0 1 0 5"/></symbol>
+      <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></symbol>
+      <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></symbol>
+      <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><path d="M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 14h3M1 9h3M1 14h3"/></symbol>
+      <symbol id="i-terminal" viewBox="0 0 24 24"><path d="M4 17l6-6-6-6M12 19h8"/></symbol>
+      <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></symbol>
+      <symbol id="i-user-plus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></symbol>
+      <symbol id="i-smile" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01"/></symbol>
+      <symbol id="i-chart" viewBox="0 0 24 24"><path d="M12 20V10M18 20V4M6 20v-4"/></symbol>
+      <symbol id="i-discord" viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></symbol>
+    </defs>
+  </svg>
+
   <!-- חלון מידע וקנייה - בוט דיסקורד -->
-  <div class="shop-modal-overlay" id="modalDiscordBot">
-    <div class="shop-modal-content">
-      <button class="shop-modal-close" data-close="modalDiscordBot">✕</button>
-      <div class="shop-modal-title">Discord Bot</div>
-      <div class="shop-modal-desc">
-        בוט אישי בעיצוב אישי לשרת הדיסקורד שלכם !<br>
-        מגוון פקודות ניהול/ציבוריות.<br>
-        <strong>דוגמאות לפקודות:</strong>
+  <div class="shop-modal-overlay" id="modalDiscordBot" aria-hidden="true">
+    <div class="shop-modal-content accent-discord" role="dialog" aria-modal="true" aria-labelledby="botModalTitle">
+      <button class="shop-modal-close" data-close="modalDiscordBot" aria-label="סגירה"><svg class="ico"><use href="#i-close"/></svg></button>
+
+      <div class="sm-hero">
+        <div class="sm-icon"><svg class="ico"><use href="#i-bot"/></svg></div>
+        <span class="sm-badge">חבילת בוט</span>
+        <h2 class="shop-modal-title" id="botModalTitle">Discord Bot</h2>
+        <p class="sm-tagline">בוט אישי בעיצוב אישי לשרת הדיסקורד שלכם, עם מגוון פקודות ניהול וציבוריות.</p>
       </div>
+
+      <div class="sm-label">דוגמאות לפקודות</div>
+
       <div class="commands-box">
-        <div class="command-item">Tickets System +</div>
-        <div class="command-item">Giveaways System +</div>
-        <div class="command-item">Stream Alerts +</div>
-        <div class="command-item">Server Logs +</div>
-        <div class="command-item">AI Moderator +</div>
-        <div class="command-item">Custom Commands +</div>
-        <div class="command-item">Verification System +</div>
-        <div class="command-item">Welcome System +</div>
-        <div class="command-item">Memes Commands +</div>
-        <div class="command-item">Levels System +</div>
+        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-ticket"/></svg></span>Tickets System</div>
+        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-gift"/></svg></span>Giveaways System</div>
+        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-bell"/></svg></span>Stream Alerts</div>
+        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-file"/></svg></span>Server Logs</div>
+        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-cpu"/></svg></span>AI Moderator</div>
+        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-terminal"/></svg></span>Custom Commands</div>
+        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-shield"/></svg></span>Verification System</div>
+        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-user-plus"/></svg></span>Welcome System</div>
+        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-smile"/></svg></span>Memes Commands</div>
+        <div class="command-item"><span class="sm-chip-icon"><svg class="ico"><use href="#i-chart"/></svg></span>Levels System</div>
       </div>
-      <div class="shop-modal-desc" style="font-size: 0.78rem; opacity: 0.8;">
-        ועוד מגוון פקודות / מערכות שתרצו להוסיף !
+
+      <p class="sm-more"><b>+</b> ועוד מגוון פקודות ומערכות שתרצו להוסיף!</p>
+
+      <div class="sm-pricing">
+        <div class="sm-price-box">
+          <span class="sm-amount">55<small>₪</small></span>
+          <span class="sm-price-label">תשלום ראשוני</span>
+        </div>
+        <span class="sm-plus">+</span>
+        <div class="sm-price-box is-secondary">
+          <span class="sm-amount">10<small>₪</small></span>
+          <span class="sm-price-label">בכל חודש</span>
+        </div>
       </div>
-      <div class="shop-modal-price">מחיר: 55 ₪ תשלום ראשוני + 10 ₪ בחודש</div>
-      <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="buy-btn">רכישה / הזמנה</a>
+
+      <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="buy-btn"><svg class="ico-fill"><use href="#i-discord"/></svg><span>רכישה / הזמנה</span></a>
+      <p class="sm-footnote">ההזמנה מתבצעת דרך שרת הדיסקורד</p>
     </div>
   </div>
 
   <!-- חלון מידע וקנייה - אתר לינקים -->
-  <div class="shop-modal-overlay" id="modalLinksWebsite">
-    <div class="shop-modal-content">
-      <button class="shop-modal-close" data-close="modalLinksWebsite">✕</button>
-      <div class="shop-modal-title">Links Website</div>
-      <div class="shop-modal-desc">
-        אתר מעוצב אישית לבקשתכם המרכז את כל הלינקים החשובים שלכם למדיה החברתית.<br><br>
-        אתר מעוצב אישית לבקשתכם, שמכיל את כל הלינקים שחשובים לכם להפיץ במדיה החברתית בצורה נקיאה, מרשימה ומותאמת אישית לצרכים שלכם.<br><br>
-        <strong>שימו לב!</strong> כתובת האתר תהיה ברירת מחדל של GITHUB, כתובת אתר אישית מגיעה בתוספת תשלום בהתאם לכתובת שתרצו.
+  <div class="shop-modal-overlay" id="modalLinksWebsite" aria-hidden="true">
+    <div class="shop-modal-content" role="dialog" aria-modal="true" aria-labelledby="linksModalTitle">
+      <button class="shop-modal-close" data-close="modalLinksWebsite" aria-label="סגירה"><svg class="ico"><use href="#i-close"/></svg></button>
+
+      <div class="sm-hero">
+        <div class="sm-icon"><svg class="ico"><use href="#i-globe"/></svg></div>
+        <span class="sm-badge">חבילת אתר</span>
+        <h2 class="shop-modal-title" id="linksModalTitle">Links Website</h2>
+        <p class="sm-tagline">אתר מעוצב אישית לבקשתכם, שמרכז את כל הלינקים החשובים שלכם למדיה החברתית.</p>
       </div>
-      <div class="shop-modal-price">מחיר: 99 ₪ תשלום חד פעמי</div>
-      <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="buy-btn">רכישה / הזמנה</a>
+
+      <div class="sm-label">מה מקבלים</div>
+
+      <ul class="sm-features">
+        <li>
+          <span class="sm-chip-icon"><svg class="ico"><use href="#i-wand"/></svg></span>
+          <span class="sm-feat-text"><strong>עיצוב אישי</strong><span>מעוצב במיוחד לפי הבקשה שלכם</span></span>
+        </li>
+        <li>
+          <span class="sm-chip-icon"><svg class="ico"><use href="#i-link"/></svg></span>
+          <span class="sm-feat-text"><strong>כל הלינקים במקום אחד</strong><span>כל מה שחשוב לכם להפיץ במדיה החברתית</span></span>
+        </li>
+        <li>
+          <span class="sm-chip-icon"><svg class="ico"><use href="#i-star"/></svg></span>
+          <span class="sm-feat-text"><strong>נקי ומרשים</strong><span>מותאם אישית לצרכים שלכם</span></span>
+        </li>
+      </ul>
+
+      <div class="sm-note">
+        <svg class="ico"><use href="#i-info"/></svg>
+        <p><strong>שימו לב:</strong> כתובת האתר תהיה כתובת ברירת המחדל של GitHub. כתובת אתר אישית מגיעה בתוספת תשלום, בהתאם לכתובת שתרצו.</p>
+      </div>
+
+      <div class="sm-pricing">
+        <div class="sm-price-box">
+          <span class="sm-amount">99<small>₪</small></span>
+          <span class="sm-price-label">תשלום חד פעמי</span>
+        </div>
+      </div>
+
+      <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="buy-btn"><svg class="ico-fill"><use href="#i-discord"/></svg><span>רכישה / הזמנה</span></a>
+      <p class="sm-footnote">ההזמנה מתבצעת דרך שרת הדיסקורד</p>
     </div>
   </div>
 
@@ -722,27 +954,38 @@
     });
 
     // ניהול חלונות מודל לחנות
-    const botModal = document.getElementById('modalDiscordBot');
-    const linksModal = document.getElementById('modalLinksWebsite');
+    const shopModals = document.querySelectorAll('.shop-modal-overlay');
+    let shopModalTrigger = null;
 
-    document.getElementById('openBotModal').addEventListener('click', () => {
-      botModal.classList.add('open');
-    });
+    function openShopModal(modal) {
+      shopModalTrigger = document.activeElement;
+      modal.classList.add('open');
+      modal.setAttribute('aria-hidden', 'false');
+      modal.querySelector('.shop-modal-content').scrollTop = 0;
+      setTimeout(() => modal.querySelector('.shop-modal-close').focus({ preventScroll: true }), 60);
+    }
 
-    document.getElementById('openLinksModal').addEventListener('click', () => {
-      linksModal.classList.add('open');
-    });
+    function closeShopModal(modal) {
+      if (!modal.classList.contains('open')) return;
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden', 'true');
+      if (shopModalTrigger && typeof shopModalTrigger.focus === 'function') shopModalTrigger.focus({ preventScroll: true });
+    }
+
+    document.getElementById('openBotModal').addEventListener('click', () => openShopModal(document.getElementById('modalDiscordBot')));
+    document.getElementById('openLinksModal').addEventListener('click', () => openShopModal(document.getElementById('modalLinksWebsite')));
 
     document.querySelectorAll('.shop-modal-close').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const targetId = btn.getAttribute('data-close');
-        document.getElementById(targetId).classList.remove('open');
-      });
+      btn.addEventListener('click', () => closeShopModal(document.getElementById(btn.getAttribute('data-close'))));
     });
 
-    window.addEventListener('click', (e) => {
-      if (e.target === botModal) botModal.classList.remove('open');
-      if (e.target === linksModal) linksModal.classList.remove('open');
+    // סגירה בלחיצה מחוץ לחלון או במקש Esc
+    shopModals.forEach(modal => {
+      modal.addEventListener('click', (e) => { if (e.target === modal) closeShopModal(modal); });
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') shopModals.forEach(modal => closeShopModal(modal));
     });
 
     const accToggleBtn = document.getElementById('accToggleBtn');
