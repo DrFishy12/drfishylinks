@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DrFishyQw // Fishy's Shop</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-color: #07090f;
+      --card-base: rgba(18, 22, 33, 0.85);
+      --text-primary: #ffffff;
+      --text-secondary: #94a3b8;
+      --kick-green: #53fc18;
+      --font-scale: 1;
+      --brightness-val: 1;
+      --line-height-val: normal;
+      --letter-spacing-val: normal;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Heebo', sans-serif;
+      cursor: url('icons8-cursor-100.png') 4 4, auto;
+    }
+
+    a, button, .accessibility-btn, .acc-option, input, .nav-tab, .buy-btn, .toggle-info-btn {
+      cursor: url('icons8-cursor-100.png') 4 4, pointer;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      background-image: 
+        radial-gradient(circle at 50% 10%, rgba(56, 189, 248, 0.1) 0%, transparent 55%),
+        radial-gradient(circle at 85% 85%, rgba(168, 85, 247, 0.07) 0%, transparent 45%);
+      color: var(--text-primary);
+      height: 100vh;
+      max-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 16px 20px;
+      overflow: hidden;
+      position: relative;
+      font-size: calc(1rem * var(--font-scale));
+      filter: brightness(var(--brightness-val));
+      line-height: var(--line-height-val);
+      letter-spacing: var(--letter-spacing-val);
+    }
+
+    body *, body h1, body h2, body p, body span, body a {
+      font-size: calc(initial * var(--font-scale));
+    }
+    h1 { font-size: calc(1.6rem * var(--font-scale)) !important; }
+
+    /* תפריט ניווט עליון */
+    .nav-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 6px;
+      z-index: 20;
+    }
+
+    .nav-tab {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 5px 16px;
+      border-radius: 10px;
+      color: var(--text-secondary);
+      font-weight: 700;
+      font-size: 0.78rem;
+      text-decoration: none;
+      backdrop-filter: blur(10px);
+      transition: all 0.3s ease;
+    }
+
+    .nav-tab:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .nav-tab.active {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.2), rgba(83, 252, 24, 0.2));
+      border-color: #53fc18;
+      color: #53fc18;
+      box-shadow: 0 0 15px rgba(83, 252, 24, 0.25);
+    }
+
+    body.high-contrast-dark {
+      --bg-color: #000000;
+      --card-base: #111111;
+      --text-primary: #ffff00;
+      --text-secondary: #ffffff;
+    }
+
+    body.high-contrast-light {
+      --bg-color: #ffffff;
+      --card-base: #f0f0f0;
+      --text-primary: #000000;
+      --text-secondary: #333333;
+    }
+
+    #readingRuler {
+      position: fixed;
+      left: 0;
+      width: 100vw;
+      height: 40px;
+      background: rgba(255, 255, 0, 0.25);
+      border-top: 2px solid yellow;
+      border-bottom: 2px solid yellow;
+      pointer-events: none;
+      display: none;
+      z-index: 99999;
+    }
+
+    .accessibility-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #121621, #1e2638);
+      border: 2px solid rgba(83, 252, 24, 0.6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #53fc18;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(83, 252, 24, 0.2);
+      z-index: 10000;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .accessibility-btn:hover { transform: scale(1.12) rotate(15deg); border-color: #53fc18; box-shadow: 0 0 25px rgba(83, 252, 24, 0.5); }
+    .accessibility-btn svg { width: 24px; height: 24px; }
+
+    .accessibility-modal {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 380px;
+      max-height: 75vh;
+      background: rgba(15, 19, 29, 0.95);
+      border: 1px solid rgba(83, 252, 24, 0.3);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(56, 189, 248, 0.1);
+      z-index: 10001;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      transform: scale(0.85) translateY(20px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .accessibility-modal.open { transform: scale(1) translateY(0); opacity: 1; visibility: visible; }
+
+    .acc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 10px; }
+    .acc-header h2 { font-size: 1.15rem !important; font-weight: 800; background: linear-gradient(135deg, #ffffff 0%, #53fc18 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .acc-close { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.2s; }
+    .acc-close:hover { background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.4); }
+    .acc-sub { font-size: 0.75rem !important; color: #94a3b8; margin-bottom: 12px; margin-top: 6px; }
+    .acc-body { display: flex; flex-direction: column; gap: 10px; overflow-y: auto; max-height: 55vh; padding-left: 4px; padding-right: 2px; }
+    .acc-body::-webkit-scrollbar { width: 5px; }
+    .acc-body::-webkit-scrollbar-thumb { background: rgba(83, 252, 24, 0.3); border-radius: 10px; }
+    .acc-control-group { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 12px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; }
+    .acc-control-label { display: flex; justify-content: space-between; font-size: 0.8rem !important; font-weight: 700; color: #e2e8f0; }
+    .acc-slider { width: 100%; accent-color: #53fc18; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; outline: none; }
+    .acc-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .acc-option { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #cbd5e1; padding: 10px 8px; border-radius: 12px; font-size: 0.75rem !important; font-weight: 700; text-align: center; transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .acc-option:hover { background: rgba(83, 252, 24, 0.08); border-color: rgba(83, 252, 24, 0.35); color: #ffffff; transform: translateY(-2px); }
+    .acc-option.active { background: rgba(83, 252, 24, 0.15); border-color: #53fc18; color: #53fc18; box-shadow: 0 0 12px rgba(83, 252, 24, 0.2); }
+    .acc-reset-btn { background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); color: #f87171; padding: 11px; border-radius: 12px; font-size: 0.78rem !important; font-weight: 700; text-align: center; margin-top: 4px; transition: all 0.2s; }
+    .acc-reset-btn:hover { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #ffffff; }
+
+    .mouse-glow { position: fixed; top: 0; left: 0; width: 450px; height: 450px; background: radial-gradient(circle, rgba(255, 255, 255, 0.07) 0%, rgba(56, 189, 248, 0.03) 40%, transparent 70%); border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); z-index: 2; transition: width 0.3s, height 0.3s; }
+    
+    .stars-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 0; }
+    .star { position: absolute; background: #ffffff; border-radius: 50%; animation: twinkle var(--duration) ease-in-out infinite; animation-delay: var(--delay); }
+    @keyframes twinkle { 0%, 100% { opacity: 0.1; transform: scale(0.8); } 50% { opacity: 0.85; transform: scale(1.2); box-shadow: 0 0 6px rgba(255, 255, 255, 0.8); } }
+
+    /* הראשים הצפים ברקע (Mini Faces) */
+    .floating-bg { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 1; overflow: hidden; }
+    .hero-bg-face { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); width: clamp(260px, 40vw, 480px); opacity: 0.1; mix-blend-mode: lighten; pointer-events: none; z-index: 1; animation: slowPulse 7s ease-in-out infinite; }
+    @keyframes slowPulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -52%) scale(1.04); } }
+    .mini-face { position: absolute; bottom: -100px; mix-blend-mode: lighten; user-select: none; animation: floatUp linear infinite; }
+    @keyframes floatUp { 0% { transform: translateY(0) rotate(0deg); opacity: 0; } 15% { opacity: var(--max-opacity); } 85% { opacity: var(--max-opacity); } 100% { transform: translateY(-115vh) rotate(360deg); opacity: 0; } }
+
+    .container { max-width: 900px; width: 100%; display: flex; flex-direction: column; align-items: center; position: relative; z-index: 10; }
+
+    .profile { text-align: center; margin-top: 10px; margin-bottom: 8px; width: 100%; display: flex; flex-direction: column; align-items: center; }
+    .avatar-wrapper { width: 78px; height: 78px; border-radius: 50%; padding: 2px; background: linear-gradient(135deg, #38bdf8, #53fc18); margin-bottom: 6px; box-shadow: 0 0 20px rgba(56, 189, 248, 0.35); }
+    .avatar { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; background: #000; }
+
+    h1 { font-size: 1.6rem; font-weight: 800; letter-spacing: 0.04em; margin-bottom: 2px; background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .official-subtitle { font-size: 0.72rem; color: #53fc18; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; margin-bottom: 4px; }
+    
+    .store-description {
+      font-size: 0.76rem;
+      color: #94a3b8;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+
+    .shop-section-title { text-align: center; font-size: 1.35rem; font-weight: 800; margin-bottom: 10px; background: linear-gradient(135deg, #38bdf8 0%, #53fc18 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.05em; width: 100%; text-shadow: 0 0 25px rgba(56, 189, 248, 0.2); }
+
+    .shop-wrapper {
+      width: 100%;
+      background: rgba(12, 16, 25, 0.65);
+      border: 1px solid rgba(56, 189, 248, 0.18);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .shop-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+      width: 100%;
+      align-items: start;
+    }
+
+    .shop-card {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, var(--card-base) 75%);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: 18px 20px;
+      border-radius: 20px;
+      color: var(--text-primary);
+      box-shadow: 0 12px 30px -5px rgba(0, 0, 0, 0.75), 0 4px 15px rgba(0, 0, 0, 0.4);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .shop-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(83, 252, 24, 0.6);
+      box-shadow: 0 18px 35px -5px rgba(0, 0, 0, 0.85), 0 0 25px rgba(83, 252, 24, 0.25);
+    }
+
+    .shop-card-top {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .shop-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 8px;
+    }
+
+    .shop-item-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+    }
+
+    .shop-item-price {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #53fc18;
+      background: rgba(83, 252, 24, 0.12);
+      padding: 4px 9px;
+      border-radius: 10px;
+      border: 1px solid rgba(83, 252, 24, 0.35);
+      white-space: nowrap;
+      box-shadow: 0 0 10px rgba(83, 252, 24, 0.15);
+    }
+
+    .shop-item-short-desc {
+      font-size: 0.82rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .shop-details {
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .shop-card.expanded .shop-details {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .shop-item-full-desc {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .command-grid-2col {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 5px 10px;
+      background: rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 8px 10px;
+      margin-top: 5px;
+    }
+
+    .command-item-grid {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    .command-item-grid span.plus {
+      color: #38bdf8;
+      font-weight: 800;
+    }
+
+    .shop-card-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      align-items: center;
+    }
+
+    .buy-btn {
+      flex: 1;
+      background: linear-gradient(135deg, #53fc18 0%, #16a34a 100%);
+      color: #05070b;
+      font-weight: 800;
+      font-size: 0.84rem;
+      padding: 8px 12px;
+      border-radius: 10px;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0 6px 20px rgba(83, 252, 24, 0.35);
+      transition: all 0.25s ease;
+    }
+
+    .buy-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(83, 252, 24, 0.55);
+    }
+
+    .toggle-info-btn {
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: #cbd5e1;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 8px 12px;
+      border-radius: 10px;
+      transition: all 0.25s ease;
+    }
+
+    .toggle-info-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    @media (max-width: 768px) {
+      .shop-grid {
+        grid-template-columns: 1fr;
+      }
+      body {
+        height: auto;
+        max-height: none;
+        overflow-y: auto;
+      }
+    }
+
+    .footer { font-size: 0.68rem; color: var(--text-secondary); letter-spacing: 0.05em; opacity: 0.7; margin-top: 10px; }
+  </style>
+</head>
+<body>
+
+  <div id="readingRuler"></div>
+
+  <button class="accessibility-btn" id="accToggleBtn" aria-label="פתח תפריט נגישות">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="4" r="2"></circle>
+      <path d="M19 13v-2c-1.5 0-3-.5-4-1.5L13 7h-2l-2 2.5C8 10.5 6.5 11 5 11v2c2 0 3.5-.5 4.5-1.5L11 11v8h2v-6l1.5 2c1 1 2.5 1.5 4.5 1.5z"></path>
+    </svg>
+  </button>
+
+  <div class="accessibility-modal" id="accModal">
+    <div class="acc-header">
+      <h2>נגישות // Accessibility</h2>
+      <button class="acc-close" id="accCloseBtn">✕</button>
+    </div>
+    <p class="acc-sub">כלים להתאמה אישית של חווית הגלישה באתר</p>
+    <div class="acc-body">
+      <div class="acc-control-group">
+        <div class="acc-control-label"><span>גודל טקסט (Font size)</span><span id="fontSizeVal">100%</span></div>
+        <input type="range" min="85" max="150" value="100" class="acc-slider" id="fontSizeSlider">
+      </div>
+      <div class="acc-control-group">
+        <div class="acc-control-label"><span>בהירות מסך (Brightness)</span><span id="brightnessVal">100%</span></div>
+        <input type="range" min="70" max="130" value="100" class="acc-slider" id="brightnessSlider">
+      </div>
+      <div class="acc-grid-2">
+        <button class="acc-option" data-action="dark-contrast">ניגודיות כהה</button>
+        <button class="acc-option" data-action="light-contrast">ניגודיות בהירה</button>
+        <button class="acc-option" data-action="high-saturation">רוויה גבוהה</button>
+        <button class="acc-option" data-action="grayscale">שחור-לבן</button>
+        <button class="acc-option" data-action="highlight-links">הדגשת קישורים</button>
+        <button class="acc-option" data-action="pause-motion">עצירת אנימציות</button>
+        <button class="acc-option" data-action="focus-mode">מצב מיקוד</button>
+        <button class="acc-option" data-action="line-height">ריווח שורות</button>
+        <button class="acc-option" data-action="text-spacing">ריווח אותיות</button>
+        <button class="acc-option" data-action="reading-ruler">סרגל קריאה</button>
+      </div>
+      <button class="acc-reset-btn" id="accResetBtn">איפוס הגדרות נגישות</button>
+    </div>
+  </div>
+
+  <div class="mouse-glow" id="mouseGlow"></div>
+  <div class="stars-bg" id="starsBg"></div>
+  <img src="face.png" alt="" class="hero-bg-face">
+  <div class="floating-bg" id="floatingBg"></div>
+
+  <div class="container">
+    <nav class="nav-tabs">
+      <a href="index.html" class="nav-tab">HOME</a>
+      <a href="shop.html" class="nav-tab active">Fishy's Shop</a>
+    </nav>
+
+    <header class="profile">
+      <div class="avatar-wrapper">
+        <img src="logo.png" alt="DrFishyQw" class="avatar">
+      </div>
+      <h1>DrFishyQw</h1>
+      <p class="official-subtitle">STORE & PACKAGES</p>
+      <p class="store-description">DrFishy is here for you, check out what he has to offer</p>
+    </header>
+  </div>
+
+  <main class="container" style="width: 100%;">
+    <div class="shop-section-title">Fishy's Shop</div>
+
+    <div class="shop-wrapper">
+      <div class="shop-grid">
+        
+        <!-- חבילה 1: Discord Bot -->
+        <div class="shop-card">
+          <div class="shop-card-top">
+            <div class="shop-card-header">
+              <span class="shop-item-title">Discord Bot</span>
+              <span class="shop-item-price">55 ₪ + 10 ₪ / חודש</span>
+            </div>
+            <div class="shop-item-short-desc">
+              בוט אישי בעיצוב אישי לשרת הדיסקורד שלכם הכולל מגוון פקודות ניהול וציבוריות.
+            </div>
+            
+            <div class="shop-details">
+              <div class="shop-item-full-desc">
+                בוט אישי בעיצוב אישי לשרת דיסקורד שלכם !<br>
+                מגוון פקודות ניהול/ציבוריות.<br>
+                <strong>דוגמאות לפקודות:</strong>
+                <div class="command-grid-2col">
+                  <div class="command-item-grid"><span class="plus">+</span> Giveaways System</div>
+                  <div class="command-item-grid"><span class="plus">+</span> Tickets System</div>
+                  <div class="command-item-grid"><span class="plus">+</span> Server Logs</div>
+                  <div class="command-item-grid"><span class="plus">+</span> Stream Alerts</div>
+                  <div class="command-item-grid"><span class="plus">+</span> Custom Commands</div>
+                  <div class="command-item-grid"><span class="plus">+</span> AI Moderator</div>
+                </div>
+                ועוד מגוון פקודות / מערכות שתרצו להוסיף !
+              </div>
+            </div>
+          </div>
+
+          <div class="shop-card-actions">
+            <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="buy-btn">קנייה</a>
+            <button class="toggle-info-btn" onclick="toggleCard(this)">מידע נוסף</button>
+          </div>
+        </div>
+
+        <!-- חבילה 2: Links Website -->
+        <div class="shop-card">
+          <div class="shop-card-top">
+            <div class="shop-card-header">
+              <span class="shop-item-title">Links Website</span>
+              <span class="shop-item-price">99 ₪ (חד פעמי)</span>
+            </div>
+            <div class="shop-item-short-desc">
+              אתר מעוצב אישית לבקשתכם המרכז את כל הלינקים החשובים שלכם למדיה החברתית.
+            </div>
+            
+            <div class="shop-details">
+              <div class="shop-item-full-desc">
+                אתר מעוצב אישית לבקשתכם, שמכיל את כלל הלינקים שחשובים לכם להפיץ במדיה החברתית בצורה נקייה, מרשימה ומותאמת אישית לצרכים שלכם.<br><br>
+                <strong>שימו לב ! כתובת האתר תהיה ברירת מחדל של GITHUB, כתובת אתר אישית מגיעה בתוספת תשלום בהתאם לכתובת שתרצו</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="shop-card-actions">
+            <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="buy-btn">קנייה</a>
+            <button class="toggle-info-btn" onclick="toggleCard(this)">מידע נוסף</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    © 2026 DRFISHYQW. All rights reserved.
+  </footer>
+
+  <script>
+    function toggleCard(btnElement) {
+      const card = btnElement.closest('.shop-card');
+      card.classList.toggle('expanded');
+      btnElement.textContent = card.classList.contains('expanded') ? 'סגור מידע' : 'מידע נוסף';
+    }
+
+    const accToggleBtn = document.getElementById('accToggleBtn');
+    const accModal = document.getElementById('accModal');
+    const accCloseBtn = document.getElementById('accCloseBtn');
+    const accResetBtn = document.getElementById('accResetBtn');
+
+    accToggleBtn.addEventListener('click', () => accModal.classList.toggle('open'));
+    accCloseBtn.addEventListener('click', () => accModal.classList.remove('open'));
+
+    const fontSizeSlider = document.getElementById('fontSizeSlider');
+    const fontSizeVal = document.getElementById('fontSizeVal');
+    fontSizeSlider.addEventListener('input', (e) => {
+      fontSizeVal.textContent = e.target.value + '%';
+      document.documentElement.style.setProperty('--font-scale', e.target.value / 100);
+    });
+
+    const brightnessSlider = document.getElementById('brightnessSlider');
+    const brightnessVal = document.getElementById('brightnessVal');
+    brightnessSlider.addEventListener('input', (e) => {
+      brightnessVal.textContent = e.target.value + '%';
+      document.documentElement.style.setProperty('--brightness-val', e.target.value / 100);
+    });
+
+    const options = document.querySelectorAll('.acc-option');
+    options.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.getAttribute('data-action');
+        if (action === 'dark-contrast') { document.body.classList.toggle('high-contrast-dark'); document.body.classList.remove('high-contrast-light'); btn.classList.toggle('active'); }
+        else if (action === 'light-contrast') { document.body.classList.toggle('high-contrast-light'); document.body.classList.remove('high-contrast-dark'); btn.classList.toggle('active'); }
+        else if (action === 'high-saturation') { document.body.classList.toggle('high-saturation'); btn.classList.toggle('active'); }
+        else if (action === 'grayscale') { document.body.classList.toggle('grayscale'); btn.classList.toggle('active'); }
+        else if (action === 'highlight-links') { document.body.classList.toggle('highlight-links'); btn.classList.toggle('active'); }
+        else if (action === 'pause-motion') { document.body.classList.toggle('pause-motion'); btn.classList.toggle('active'); }
+        else if (action === 'focus-mode') { document.body.classList.toggle('focus-mode'); btn.classList.toggle('active'); }
+        else if (action === 'line-height') {
+          const current = document.documentElement.style.getPropertyValue('--line-height-val');
+          if (!current || current === 'normal') { document.documentElement.style.setProperty('--line-height-val', '1.9'); btn.classList.add('active'); }
+          else { document.documentElement.style.setProperty('--line-height-val', 'normal'); btn.classList.remove('active'); }
+        }
+        else if (action === 'text-spacing') {
+          const current = document.documentElement.style.getPropertyValue('--letter-spacing-val');
+          if (!current || current === 'normal') { document.documentElement.style.setProperty('--letter-spacing-val', '2px'); btn.classList.add('active'); }
+          else { document.documentElement.style.setProperty('--letter-spacing-val', 'normal'); btn.classList.remove('active'); }
+        }
+        else if (action === 'reading-ruler') {
+          const ruler = document.getElementById('readingRuler');
+          if (ruler.style.display === 'block') { ruler.style.display = 'none'; btn.classList.remove('active'); }
+          else { ruler.style.display = 'block'; btn.classList.add('active'); }
+        }
+      });
+    });
+
+    const glow = document.getElementById('mouseGlow');
+    window.addEventListener('mousemove', (e) => { glow.style.left = e.clientX + 'px'; glow.style.top = e.clientY + 'px'; });
+
+    const starsContainer = document.getElementById('starsBg');
+    for (let i = 0; i < 65; i++) {
+      const star = document.createElement('div');
+      star.className = 'star';
+      const size = (Math.random() * 2 + 1).toFixed(1) + 'px';
+      star.style.width = size; star.style.height = size;
+      star.style.top = Math.random() * 100 + 'vh'; star.style.left = Math.random() * 100 + 'vw';
+      star.style.setProperty('--duration', (Math.random() * 4 + 3).toFixed(1) + 's');
+      star.style.setProperty('--delay', -(Math.random() * 5).toFixed(1) + 's');
+      starsContainer.appendChild(star);
+    }
+
+    const bgContainer = document.getElementById('floatingBg');
+    for (let i = 0; i < 22; i++) {
+      const img = document.createElement('img');
+      img.src = 'face.png'; img.className = 'mini-face';
+      img.style.left = Math.random() * 95 + 'vw';
+      img.style.width = (Math.floor(Math.random() * 35) + 30) + 'px';
+      const duration = Math.random() * 11 + 9;
+      img.style.animationDuration = duration + 's';
+      img.style.animationDelay = -(Math.random() * duration) + 's';
+      img.style.setProperty('--max-opacity', (Math.random() * 0.28 + 0.12).toFixed(2));
+      bgContainer.appendChild(img);
+    }
+  </script>
+</body>
+</html>
