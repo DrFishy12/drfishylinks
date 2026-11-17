@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DrFishyQw // Official Links & Shop</title>
   <link rel="preload" href="logo.png" as="image">
+  <link rel="preload" href="logo-fire.webp" as="image">
+  <link rel="preload" href="logo-person.webp" as="image">
   <script>
     // אם האינטרו כבר הוצג בביקור הזה - מסתירים אותו מיד (בלי הבהוב)
     try { if (sessionStorage.getItem('visited')) document.documentElement.classList.add('intro-seen'); } catch (e) {}
@@ -806,7 +808,11 @@
     .profile { text-align: center; margin-bottom: 28px; width: 100%; display: flex; flex-direction: column; align-items: center; }
     .avatar-wrapper { width: 104px; height: 104px; border-radius: 50%; padding: 3px; background: linear-gradient(135deg, #38bdf8, rgba(255,255,255,0.1)); margin: 0 auto 16px; box-shadow: 0 12px 35px rgba(56, 189, 248, 0.25); transition: all 0.4s ease; }
     .avatar-wrapper.is-live { background: linear-gradient(135deg, var(--kick-green), #16a34a); box-shadow: 0 0 28px rgba(83, 252, 24, 0.45); }
-    .avatar { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; background: #000; }
+    .avatar { position: relative; width: 100%; height: 100%; object-fit: cover; border-radius: 50%; background: #000; }
+
+    /* לוגו עם אש מונפשת: התמונה המקורית מתחת (גיבוי), והקנבס עם האש מעליה */
+    .fire-logo { overflow: hidden; }
+    .fire-logo > img, .fire-logo-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; object-fit: cover; border-radius: inherit; }
 
     h1 { font-size: 2.2rem; font-weight: 800; letter-spacing: 0.04em; margin-bottom: 6px; background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .official-subtitle { font-size: 0.82rem; color: #ffffff; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; margin-bottom: 16px; }
@@ -1044,7 +1050,7 @@
           <circle class="intro-r2" cx="120" cy="120" r="118"/>
         </svg>
         <div class="intro-ring"></div>
-        <img src="logo.png" alt="" class="intro-logo">
+        <div class="intro-logo fire-logo" data-fire-logo><img src="logo.png" alt=""></div>
         <div class="intro-shock"></div>
         <div class="intro-shock is-fire"></div>
       </div>
@@ -1214,7 +1220,7 @@
     <div id="home-view" class="view-section active-view">
       <header class="profile">
         <div class="avatar-wrapper" id="avatarWrapper">
-          <img src="logo.png" alt="DrFishyQw" class="avatar">
+          <div class="avatar fire-logo" data-fire-logo><img src="logo.png" alt="DrFishyQw"></div>
         </div>
         <h1>DrFishyQw</h1>
         <p class="official-subtitle">OFFICIAL LINKS</p>
@@ -1320,7 +1326,7 @@
     <div id="shop-view" class="view-section">
       <header class="profile shop-profile">
         <div class="avatar-wrapper">
-          <img src="logo.png" alt="DrFishyQw" class="avatar">
+          <div class="avatar fire-logo" data-fire-logo><img src="logo.png" alt="DrFishyQw"></div>
         </div>
         <h1>DrFishyQw</h1>
         <p class="official-subtitle">STORE & PACKAGES</p>
@@ -1688,6 +1694,149 @@
         particleRaf = requestAnimationFrame(frame);
       }
       particleRaf = requestAnimationFrame(frame);
+    })();
+
+    // ===== לוגו עם אש חיה (WebGL) =====
+    // שתי שכבות: logo-fire.webp (רק האש, מונפשת) ו-logo-person.webp (הדמות, סטטית מעל).
+    // אם WebGL לא זמין - נשאר הלוגו הרגיל.
+    (function initFireLogos() {
+      const hosts = document.querySelectorAll('[data-fire-logo]');
+      if (!hosts.length || !window.WebGLRenderingContext) return;
+
+      const VERT = 'attribute vec2 aPos; void main() { gl_Position = vec4(aPos, 0.0, 1.0); }';
+      const FRAG = `
+        #ifdef GL_FRAGMENT_PRECISION_HIGH
+        precision highp float;
+        #else
+        precision mediump float;
+        #endif
+        uniform sampler2D uFire;
+        uniform sampler2D uPerson;
+        uniform float uTime;
+        uniform vec2 uRes;
+
+        float hash(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+        float noise(vec2 p) {
+          vec2 i = floor(p), f = fract(p);
+          vec2 u = f * f * (3.0 - 2.0 * f);
+          return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), u.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), u.x), u.y);
+        }
+        float fbm(vec2 p) {
+          float v = 0.0, a = 0.5;
+          for (int i = 0; i < 4; i++) { v += a * noise(p); p *= 2.03; a *= 0.5; }
+          return v;
+        }
+
+        void main() {
+          vec2 uv = vec2(gl_FragCoord.x / uRes.x, 1.0 - gl_FragCoord.y / uRes.y);
+          float t = uTime;
+
+          // רעש שזורם כלפי מעלה - מעוות את האש כך שהלהבות "מלחכות" למעלה
+          vec2 q = uv * vec2(4.0, 3.0);
+          float n1 = fbm(q + vec2(0.0, t * 0.9));
+          float n2 = fbm(q * 1.3 + vec2(5.2, t * 1.25));
+          float strength = 0.026 * (0.65 + 0.7 * (1.0 - uv.y));
+          vec2 disp = (vec2(n1, n2) - 0.5) * strength * vec2(1.1, 1.9);
+          vec3 fire = texture2D(uFire, uv + disp).rgb;
+
+          // הבהוב וזוהר רק באזורים החמים של האש
+          float warm = clamp((fire.r - fire.b) * 1.4, 0.0, 1.0);
+          float flick = fbm(uv * vec2(2.5, 3.5) + vec2(t * 0.35, t * 1.6));
+          fire *= mix(1.0, 0.8 + 0.45 * flick, warm);
+          fire += vec3(1.0, 0.42, 0.08) * pow(flick, 3.0) * 0.4 * warm;
+
+          // גחלים קטנות שעולות
+          vec2 eg = uv * 26.0 + vec2(0.0, t * 2.2);
+          vec2 cell = floor(eg);
+          float h = hash(cell);
+          vec2 f = fract(eg) - 0.5 + vec2(sin(t * 2.0 + h * 20.0) * 0.2, 0.0);
+          float ember = step(0.93, h) * smoothstep(0.2, 0.0, length(f));
+          fire += vec3(1.0, 0.62, 0.22) * ember * (0.5 + 0.5 * sin(t * 3.0 + h * 30.0));
+
+          // הדמות סטטית מעל האש
+          vec4 person = texture2D(uPerson, uv);
+          gl_FragColor = vec4(mix(fire, person.rgb, person.a), 1.0);
+        }`;
+
+      const instances = [];
+      let running = false;
+
+      function makeTexture(gl, img) {
+        const tex = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        return tex;
+      }
+
+      function createFireLogo(host, fireImg, personImg) {
+        const canvas = document.createElement('canvas');
+        canvas.className = 'fire-logo-canvas';
+        canvas.setAttribute('aria-hidden', 'true');
+        const gl = canvas.getContext('webgl', { alpha: false, antialias: false, premultipliedAlpha: false });
+        if (!gl) return;
+
+        const compile = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return gl.getShaderParameter(s, gl.COMPILE_STATUS) ? s : null; };
+        const vs = compile(gl.VERTEX_SHADER, VERT), fs = compile(gl.FRAGMENT_SHADER, FRAG);
+        if (!vs || !fs) return;
+        const prog = gl.createProgram();
+        gl.attachShader(prog, vs); gl.attachShader(prog, fs); gl.linkProgram(prog);
+        if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return;
+        gl.useProgram(prog);
+
+        const buf = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+        const aPos = gl.getAttribLocation(prog, 'aPos');
+        gl.enableVertexAttribArray(aPos);
+        gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+        gl.activeTexture(gl.TEXTURE0); makeTexture(gl, fireImg);
+        gl.activeTexture(gl.TEXTURE1); makeTexture(gl, personImg);
+        gl.uniform1i(gl.getUniformLocation(prog, 'uFire'), 0);
+        gl.uniform1i(gl.getUniformLocation(prog, 'uPerson'), 1);
+
+        const inst = { host, canvas, gl, uTime: gl.getUniformLocation(prog, 'uTime'), uRes: gl.getUniformLocation(prog, 'uRes'), drawn: false };
+        canvas.addEventListener('webglcontextlost', () => { canvas.remove(); const i = instances.indexOf(inst); if (i > -1) instances.splice(i, 1); });
+        host.appendChild(canvas);
+        instances.push(inst);
+      }
+
+      function frame(now) {
+        const t = (now / 1000) % 3600;
+        const paused = document.body.classList.contains('pause-motion');
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        for (let i = instances.length - 1; i >= 0; i--) {
+          const inst = instances[i];
+          if (!inst.host.isConnected) {
+            const ext = inst.gl.getExtension('WEBGL_lose_context');
+            if (ext) ext.loseContext();
+            instances.splice(i, 1);
+            continue;
+          }
+          const w = inst.host.clientWidth;
+          if (!w || (paused && inst.drawn)) continue; // מוסתר (טאב אחר) או "עצירת אנימציות" בתפריט הנגישות
+          const size = Math.min(512, Math.round(w * dpr));
+          const gl = inst.gl;
+          if (inst.canvas.width !== size) { inst.canvas.width = size; inst.canvas.height = size; }
+          gl.viewport(0, 0, size, size);
+          gl.uniform1f(inst.uTime, t);
+          gl.uniform2f(inst.uRes, size, size);
+          gl.drawArrays(gl.TRIANGLES, 0, 3);
+          inst.drawn = true;
+        }
+        if (instances.length) requestAnimationFrame(frame); else running = false;
+      }
+
+      const load = (src) => new Promise((resolve, reject) => { const img = new Image(); img.onload = () => resolve(img); img.onerror = reject; img.src = src; });
+      Promise.all([load('logo-fire.webp'), load('logo-person.webp')]).then(([fireImg, personImg]) => {
+        hosts.forEach(host => { if (host.isConnected) createFireLogo(host, fireImg, personImg); });
+        if (instances.length && !running) { running = true; requestAnimationFrame(frame); }
+      }).catch(() => {});
     })();
 
     const KICK_USERNAME = 'drfishyqw';
