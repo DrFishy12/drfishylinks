@@ -69,31 +69,41 @@
     .link-subtitle { font-size: calc(0.78rem * var(--font-scale)) !important; }
     .bio { font-size: calc(0.84rem * var(--font-scale)) !important; }
 
-    /* תפריט ניווט עליון בין דפים */
+    /* תפריט ניווט עליון בין דפים - בתוך מסגרת זכוכית שקופה */
     .nav-tabs {
+      position: relative;
       display: flex;
-      gap: 12px;
+      gap: 6px;
+      width: min(100%, 460px);
+      padding: 6px;
       margin-bottom: 20px;
       z-index: 20;
+      border-radius: 18px;
+      background:
+        linear-gradient(90deg, rgba(56, 189, 248, 0.1) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(83, 252, 24, 0.1) 100%),
+        rgba(14, 18, 28, 0.55);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
     }
 
     .nav-tab {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 10px 24px;
-      border-radius: 14px;
+      flex: 1;
+      background: transparent;
+      border: 1px solid transparent;
+      padding: 10px 18px;
+      border-radius: 13px;
       color: var(--text-secondary);
       font-weight: 700;
       font-size: 0.9rem;
       text-decoration: none;
-      backdrop-filter: blur(10px);
       transition: all 0.3s ease;
     }
 
     .nav-tab:hover {
-      background: rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.06);
       color: #ffffff;
-      border-color: rgba(255, 255, 255, 0.25);
     }
 
     .nav-tab.active {
@@ -821,6 +831,40 @@
     .stream-title-box:hover { background: rgba(255, 255, 255, 0.07); border-color: rgba(255, 255, 255, 0.4); transform: translateY(-1px); }
     .stream-title-box.is-live { border-color: rgba(83, 252, 24, 0.45); background: rgba(83, 252, 24, 0.05); color: #ffffff; box-shadow: 0 0 20px rgba(83, 252, 24, 0.12); }
 
+    /* סטטוס שידור בקיק: ONLINE / OFFLINE (מתעדכן אוטומטית) */
+    .live-status {
+      direction: ltr;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      min-width: 150px;
+      margin-top: 16px;
+      padding: 9px 22px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      color: #cbd5e1;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: color 0.35s ease, background 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+    }
+    .live-status:hover { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.3); }
+    .live-dot { position: relative; flex-shrink: 0; width: 8px; height: 8px; border-radius: 50%; background: #64748b; transition: background 0.35s ease, box-shadow 0.35s ease; }
+    .live-status.is-checking .live-dot { animation: liveBlink 1s ease-in-out infinite; }
+    .live-status.is-online { color: #eaffdf; background: rgba(83, 252, 24, 0.07); border-color: rgba(83, 252, 24, 0.45); box-shadow: 0 0 20px rgba(83, 252, 24, 0.15); }
+    .live-status.is-online:hover { background: rgba(83, 252, 24, 0.12); border-color: rgba(83, 252, 24, 0.7); }
+    .live-status.is-online .live-dot { background: #53fc18; box-shadow: 0 0 10px #53fc18; }
+    .live-status.is-online .live-dot::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #53fc18; animation: livePing 1.6s cubic-bezier(0, 0, 0.2, 1) infinite; }
+    .live-status.is-offline { color: #94a3b8; }
+    .live-status.is-offline .live-dot { background: #ef4444; box-shadow: 0 0 8px rgba(239, 68, 68, 0.6); }
+    @keyframes livePing { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(3); opacity: 0; } }
+    @keyframes liveBlink { 50% { opacity: 0.3; } }
+
     .bio { font-size: 0.84rem; color: var(--text-secondary); font-weight: 400; letter-spacing: 0.06em; }
 
     .links-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; width: 100%; }
@@ -1230,6 +1274,11 @@
         </a>
 
         <p class="bio">Creator • Streamer • Community</p>
+
+        <a href="https://kick.com/drfishyqw" target="_blank" class="live-status is-checking" id="liveStatus" aria-live="polite">
+          <span class="live-dot" aria-hidden="true"></span>
+          <span id="liveStatusText">CHECKING</span>
+        </a>
       </header>
 
       <main class="links-grid">
@@ -1855,14 +1904,27 @@
       return null;
     }
 
+    let kickStatusKnown = false;
     async function checkKickLiveStatus() {
       const box = document.getElementById('streamTitleBox');
       const titleEl = document.getElementById('streamTitleText');
       const avatarWrapper = document.getElementById('avatarWrapper');
       const kickSubtitle = document.getElementById('kickSubtitle');
+      const liveStatus = document.getElementById('liveStatus');
+      const liveStatusText = document.getElementById('liveStatusText');
       const data = await fetchKickChannelData(KICK_USERNAME);
 
-      if (data && data.livestream) {
+      // אם הבדיקה נכשלה (בעיית רשת) - משאירים את המצב האחרון הידוע במקום "לקפוץ" לאופליין
+      if (!data && kickStatusKnown) return;
+      if (data) kickStatusKnown = true;
+
+      const isLive = !!(data && data.livestream);
+      liveStatus.classList.remove('is-checking');
+      liveStatus.classList.toggle('is-online', isLive);
+      liveStatus.classList.toggle('is-offline', !isLive);
+      liveStatusText.textContent = isLive ? 'ONLINE' : 'OFFLINE';
+
+      if (isLive) {
         titleEl.textContent = data.livestream.session_title || 'בשידור חי עכשיו ב-Kick!';
         box.classList.add('is-live'); avatarWrapper.classList.add('is-live');
         kickSubtitle.textContent = `בשידור חי (${data.livestream.viewer_count} צופים)`;
