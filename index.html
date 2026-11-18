@@ -20,9 +20,6 @@
       --text-secondary: #94a3b8;
       --kick-green: #53fc18;
       --font-scale: 1;
-      --brightness-val: 1;
-      --line-height-val: normal;
-      --letter-spacing-val: normal;
     }
 
     * {
@@ -33,13 +30,17 @@
       cursor: url('icons8-cursor-100.png') 4 4, auto;
     }
 
-    a, button, .link-card, .stream-title-box, .accessibility-btn, .acc-option, input, .nav-tab {
+    a, button, .link-card, .stream-title-box, input, .nav-tab {
       cursor: url('icons8-cursor-100.png') 4 4, pointer;
     }
 
     html {
       height: 100vh;
       overflow: hidden;
+      /* גודל הטקסט מתפריט הנגישות: כל הגדלים באתר ב-rem, אז הם גדלים ביחד */
+      font-size: calc(100% * var(--font-scale));
+      /* רקע משלו ל-html, כדי שהרקע של body ייצבע בתוך body ויושפע ממצבי הצבע של הנגישות */
+      background-color: var(--bg-color);
     }
 
     body {
@@ -55,19 +56,15 @@
       padding: clamp(14px, 3vh, 32px) 20px;
       overflow: hidden;
       position: relative;
-      font-size: calc(1rem * var(--font-scale));
-      filter: brightness(var(--brightness-val));
-      line-height: var(--line-height-val);
-      letter-spacing: var(--letter-spacing-val);
+      font-size: 1rem;
+      /* מצבי הצבע מתפריט הנגישות (ניגודיות / בהיר / שחור-לבן / רוויה) */
+      filter: contrast(var(--acc-c, 1)) saturate(var(--acc-s, 1)) grayscale(var(--acc-g, 0)) invert(var(--acc-i, 0)) hue-rotate(var(--acc-h, 0deg));
     }
 
-    body *, body h1, body h2, body p, body span, body a {
-      font-size: calc(initial * var(--font-scale));
-    }
-    h1 { font-size: calc(2rem * var(--font-scale)) !important; }
-    .link-title { font-size: calc(1.05rem * var(--font-scale)) !important; }
-    .link-subtitle { font-size: calc(0.78rem * var(--font-scale)) !important; }
-    .bio { font-size: calc(0.84rem * var(--font-scale)) !important; }
+    h1 { font-size: 2rem !important; }
+    .link-title { font-size: 1.05rem !important; }
+    .link-subtitle { font-size: 0.78rem !important; }
+    .bio { font-size: 0.84rem !important; }
 
     /* תפריט ניווט עליון בין דפים - בתוך מסגרת זכוכית שקופה */
     .nav-tabs {
@@ -468,101 +465,165 @@
       .buy-btn { padding: 14px 16px; }
     }
 
-    /* מצבי נגישות גלובליים */
-    body.high-contrast-dark {
-      --bg-color: #000000;
-      --card-base: #111111;
-      --text-primary: #ffff00;
-      --text-secondary: #ffffff;
+    /* ===== מצבי נגישות (מופעלים מהתפריט ונשמרים במכשיר) ===== */
+    /* צבעים: עובדים דרך ה-filter של body */
+    body.acc-contrast-high { --acc-c: 1.45; --text-secondary: #e2e8f0; }
+    body.acc-contrast-light { --acc-i: 1; --acc-h: 180deg; }
+    body.acc-contrast-mono { --acc-g: 1; }
+    body.acc-sat-low { --acc-s: 0.45; }
+    body.acc-sat-high { --acc-s: 1.8; }
+    /* במצב בהיר הופכים בחזרה תמונות ווידאו כדי שייראו רגיל */
+    body.acc-contrast-light img, body.acc-contrast-light canvas, body.acc-contrast-light iframe, body.acc-contrast-light video { filter: invert(1) hue-rotate(180deg) !important; }
+
+    /* טקסט */
+    body.acc-line-height :is(p, span, a, li, h1, h2, h3, h4, button, b, small, strong, label) { line-height: 1.85 !important; }
+    body.acc-letter-spacing :is(p, span, a, li, h1, h2, h3, h4, button, b, small, strong, label) { letter-spacing: 0.12em !important; word-spacing: 0.16em !important; }
+    body.acc-readable-font, body.acc-readable-font * { font-family: Arial, 'Segoe UI', Tahoma, sans-serif !important; }
+
+    /* ניווט */
+    body.acc-highlight-links a, body.acc-highlight-links .nav-tab, body.acc-highlight-links [role="button"] { outline: 2px dashed #ffd400 !important; outline-offset: 3px !important; }
+    body.acc-highlight-links a { text-decoration: underline !important; text-underline-offset: 3px; }
+    body.acc-strong-focus :focus { outline: 3px solid #ffd400 !important; outline-offset: 3px !important; box-shadow: 0 0 0 7px rgba(255, 212, 0, 0.3) !important; }
+    body.acc-big-cursor, body.acc-big-cursor * {
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24'%3E%3Cpath d='M4 2.5 19.5 13l-6.6 1.3 3.7 7.1-3 1.5-3.6-7.2L4 20z' fill='black' stroke='white' stroke-width='1.3' stroke-linejoin='round'/%3E%3C/svg%3E") 8 5, auto !important;
     }
+    body.pause-motion *, body.pause-motion *::before, body.pause-motion *::after { animation: none !important; transition: none !important; }
 
-    body.high-contrast-light {
-      --bg-color: #ffffff;
-      --card-base: #f0f0f0;
-      --text-primary: #000000;
-      --text-secondary: #333333;
-    }
+    /* סרגל קריאה ומסכת קריאה - עוקבים אחרי העכבר / האצבע */
+    #readingRuler, .reading-mask { position: fixed; left: 0; right: 0; display: none; pointer-events: none; }
+    #readingRuler { top: 0; z-index: 99999; height: 34px; background: rgba(255, 212, 0, 0.08); border-top: 2px solid #ffd400; border-bottom: 2px solid #ffd400; box-shadow: 0 0 18px rgba(255, 212, 0, 0.35); }
+    .reading-mask { z-index: 99998; background: rgba(0, 0, 0, 0.62); }
+    #readingMaskTop { top: 0; }
+    #readingMaskBottom { bottom: 0; }
+    body.acc-reading-guide #readingRuler, body.acc-reading-mask .reading-mask { display: block; }
 
-    body.high-saturation * { filter: saturate(2.5); }
-    body.grayscale { filter: grayscale(100%) brightness(var(--brightness-val)); }
-    body.highlight-links a { background-color: yellow !important; color: black !important; outline: 3px solid red !important; }
-    body.pause-motion *, body.pause-motion .star, body.pause-motion .mini-face, body.pause-motion .hero-bg-face, body.pause-motion .mouse-glow { animation: none !important; transition: none !important; }
-    body.focus-mode *:not(:focus):not(body):not(html) { opacity: 0.3; }
-    body.focus-mode *:focus { outline: 4px solid #53fc18 !important; opacity: 1 !important; }
-
-    #readingRuler {
+    /* ===== כפתור הנגישות ===== */
+    .acc-fab {
       position: fixed;
-      left: 0;
-      width: 100vw;
-      height: 40px;
-      background: rgba(255, 255, 0, 0.25);
-      border-top: 2px solid yellow;
-      border-bottom: 2px solid yellow;
-      pointer-events: none;
-      display: none;
-      z-index: 99999;
-    }
-
-    .accessibility-btn {
-      position: fixed;
-      bottom: 25px;
-      right: 25px;
+      right: 22px;
+      bottom: 22px;
+      z-index: 10400;
+      display: grid;
+      place-items: center;
       width: 54px;
       height: 54px;
-      background: linear-gradient(135deg, #121621, #1e2638);
-      border: 2px solid rgba(83, 252, 24, 0.6);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border-radius: 18px;
       color: #53fc18;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(83, 252, 24, 0.2);
-      z-index: 10000;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      background: linear-gradient(145deg, rgba(22, 28, 40, 0.96), rgba(12, 16, 24, 0.96));
+      border: 1px solid rgba(83, 252, 24, 0.45);
+      box-shadow: 0 14px 30px -10px rgba(0, 0, 0, 0.8), 0 0 0 4px rgba(83, 252, 24, 0.08), 0 0 22px rgba(83, 252, 24, 0.18);
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.25s ease, box-shadow 0.25s ease;
     }
-    .accessibility-btn:hover { transform: scale(1.12) rotate(15deg); border-color: #53fc18; box-shadow: 0 0 25px rgba(83, 252, 24, 0.5); }
-    .accessibility-btn svg { width: 26px; height: 26px; }
+    .acc-fab:hover { transform: translateY(-3px) scale(1.05); border-color: #53fc18; box-shadow: 0 18px 34px -10px rgba(0, 0, 0, 0.85), 0 0 0 5px rgba(83, 252, 24, 0.12), 0 0 30px rgba(83, 252, 24, 0.4); }
+    .acc-fab:focus-visible { outline: 3px solid #53fc18; outline-offset: 3px; }
+    .acc-fab svg { width: 30px; height: 30px; }
+    .acc-fab-dot { position: absolute; top: -5px; left: -5px; display: none; width: 15px; height: 15px; border-radius: 50%; background: #53fc18; border: 2px solid #0b0f17; box-shadow: 0 0 10px #53fc18; }
+    .acc-fab.has-settings .acc-fab-dot { display: block; }
 
-    .accessibility-modal {
+    /* ===== לוח הנגישות (מגירה מהצד; בטלפון - חלון מלמטה) ===== */
+    .acc-backdrop { position: fixed; inset: 0; z-index: 99996; background: rgba(2, 4, 8, 0.45); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+    .acc-backdrop.open { opacity: 1; visibility: visible; }
+    .acc-panel {
       position: fixed;
-      bottom: 95px;
-      right: 25px;
-      width: 380px;
-      max-height: 82vh;
-      background: rgba(15, 19, 29, 0.95);
-      border: 1px solid rgba(83, 252, 24, 0.3);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: 24px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(56, 189, 248, 0.1);
-      z-index: 10001;
+      top: 14px;
+      right: 14px;
+      bottom: 14px;
+      z-index: 100000;
       display: flex;
       flex-direction: column;
-      padding: 24px;
-      transform: scale(0.85) translateY(20px);
-      opacity: 0;
+      width: min(400px, calc(100vw - 28px));
+      overflow: hidden;
+      text-align: right;
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(17, 22, 33, 0.97), rgba(10, 13, 20, 0.98));
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      box-shadow: 0 30px 80px -20px rgba(0, 0, 0, 0.9), 0 0 0 1px rgba(83, 252, 24, 0.08), 0 0 50px -20px rgba(83, 252, 24, 0.35);
+      transform: translateX(calc(100% + 30px));
       visibility: hidden;
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.45s ease;
     }
-    .accessibility-modal.open { transform: scale(1) translateY(0); opacity: 1; visibility: visible; }
+    .acc-panel.open { transform: none; visibility: visible; }
 
-    .acc-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 12px; }
-    .acc-header h2 { font-size: 1.25rem !important; font-weight: 800; background: linear-gradient(135deg, #ffffff 0%, #53fc18 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-    .acc-close { background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.1); color: #94a3b8; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; transition: all 0.2s; }
-    .acc-close:hover { background: rgba(239, 68, 68, 0.2); color: #ef4444; border-color: rgba(239, 68, 68, 0.4); }
-    .acc-sub { font-size: 0.78rem !important; color: #94a3b8; margin-bottom: 16px; margin-top: 8px; }
-    .acc-body { display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: calc(70vh - 80px); padding-left: 4px; padding-right: 2px; }
-    .acc-body::-webkit-scrollbar { width: 5px; }
-    .acc-body::-webkit-scrollbar-thumb { background: rgba(83, 252, 24, 0.3); border-radius: 10px; }
-    .acc-control-group { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 14px; padding: 12px 16px; display: flex; flex-direction: column; gap: 8px; }
-    .acc-control-label { display: flex; justify-content: space-between; font-size: 0.84rem !important; font-weight: 700; color: #e2e8f0; }
-    .acc-slider { width: 100%; accent-color: #53fc18; height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; outline: none; }
-    .acc-grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-    .acc-option { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); color: #cbd5e1; padding: 12px 10px; border-radius: 14px; font-size: 0.78rem !important; font-weight: 700; text-align: center; transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; gap: 6px; }
-    .acc-option:hover { background: rgba(83, 252, 24, 0.08); border-color: rgba(83, 252, 24, 0.35); color: #ffffff; transform: translateY(-2px); }
-    .acc-option.active { background: rgba(83, 252, 24, 0.15); border-color: #53fc18; color: #53fc18; box-shadow: 0 0 12px rgba(83, 252, 24, 0.2); }
-    .acc-reset-btn { background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.25); color: #f87171; padding: 13px; border-radius: 14px; font-size: 0.82rem !important; font-weight: 700; text-align: center; margin-top: 6px; transition: all 0.2s; }
-    .acc-reset-btn:hover { background: rgba(239, 68, 68, 0.2); border-color: #ef4444; color: #ffffff; }
+    .acc-head { position: relative; display: flex; align-items: center; gap: 12px; padding: 18px 18px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.06); background: radial-gradient(120% 140% at 100% 0%, rgba(83, 252, 24, 0.14), transparent 60%); }
+    .acc-head-icon { flex-shrink: 0; display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; color: #04130a; background: linear-gradient(145deg, #7dff4d, #1fb84a); box-shadow: 0 8px 20px -6px rgba(83, 252, 24, 0.6); }
+    .acc-head-icon svg { width: 28px; height: 28px; }
+    .acc-head h2 { font-size: 1.2rem; font-weight: 800; line-height: 1.2; color: #ffffff; }
+    .acc-head p { font-size: 0.76rem; color: #94a3b8; }
+    .acc-x { margin-inline-start: auto; display: grid; place-items: center; width: 38px; height: 38px; border-radius: 12px; color: #cbd5e1; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); transition: background 0.2s ease, color 0.2s ease; }
+    .acc-x:hover { color: #ffffff; background: rgba(255, 255, 255, 0.1); }
+    .acc-x svg { width: 18px; height: 18px; }
+
+    .acc-scroll { flex: 1; display: flex; flex-direction: column; gap: 18px; padding: 14px 16px 18px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: rgba(83, 252, 24, 0.3) transparent; }
+    .acc-sec-title { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.04em; color: #7f8ba0; }
+    .acc-sec-title::after { content: ""; flex: 1; height: 1px; background: linear-gradient(270deg, transparent, rgba(255, 255, 255, 0.1)); }
+
+    .acc-profiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .acc-profile { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; padding: 12px; border-radius: 16px; text-align: right; color: #e2e8f0; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease; }
+    .acc-profile:hover { transform: translateY(-2px); background: rgba(83, 252, 24, 0.06); border-color: rgba(83, 252, 24, 0.35); }
+    .acc-profile .acc-pi { display: grid; place-items: center; width: 32px; height: 32px; margin-bottom: 5px; border-radius: 10px; color: #53fc18; background: rgba(83, 252, 24, 0.1); transition: background 0.25s ease, color 0.25s ease; }
+    .acc-profile .acc-pi svg { width: 18px; height: 18px; }
+    .acc-profile b { font-size: 0.84rem; font-weight: 800; }
+    .acc-profile small { font-size: 0.68rem; line-height: 1.4; color: #8b97aa; }
+    .acc-profile[aria-pressed="true"] { background: rgba(83, 252, 24, 0.12); border-color: #53fc18; }
+    .acc-profile[aria-pressed="true"] .acc-pi { color: #04130a; background: #53fc18; }
+
+    .acc-stepper { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; padding: 10px 12px; border-radius: 16px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .acc-stepper-label { display: flex; align-items: center; gap: 10px; font-size: 0.84rem; font-weight: 700; color: #e2e8f0; }
+    .acc-stepper-label svg { width: 20px; height: 20px; color: #53fc18; }
+    .acc-step-ctrl { display: flex; align-items: center; gap: 6px; direction: ltr; }
+    .acc-step-btn { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; font-size: 1.15rem; font-weight: 800; line-height: 1; color: #e2e8f0; background: rgba(255, 255, 255, 0.06); border: 1px solid rgba(255, 255, 255, 0.12); transition: border-color 0.2s ease, color 0.2s ease; }
+    .acc-step-btn:hover:not(:disabled) { color: #53fc18; border-color: #53fc18; }
+    .acc-step-btn:disabled { opacity: 0.35; }
+    .acc-step-val { min-width: 52px; font-weight: 800; text-align: center; color: #53fc18; font-variant-numeric: tabular-nums; }
+
+    .acc-tiles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+    .acc-tile {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 84px;
+      padding: 12px 6px 10px;
+      border-radius: 16px;
+      text-align: center;
+      font-size: 0.74rem;
+      font-weight: 700;
+      line-height: 1.25;
+      color: #cbd5e1;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+    }
+    .acc-tile svg { width: 22px; height: 22px; color: #94a3b8; transition: color 0.2s ease, transform 0.3s ease; }
+    .acc-tile:hover { color: #ffffff; background: rgba(83, 252, 24, 0.05); border-color: rgba(83, 252, 24, 0.35); }
+    .acc-tile:hover svg { color: #53fc18; transform: scale(1.1); }
+    .acc-tile::after { content: ""; position: absolute; top: 7px; left: 7px; width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid rgba(255, 255, 255, 0.2); }
+    .acc-tile[aria-pressed="true"] { color: #ffffff; background: rgba(83, 252, 24, 0.12); border-color: #53fc18; }
+    .acc-tile[aria-pressed="true"] svg { color: #53fc18; }
+    .acc-tile[aria-pressed="true"]::after { border-color: #53fc18; background: #53fc18 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2304130a' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E") center / 9px no-repeat; }
+
+    .acc-seg-label { display: block; margin: 0 2px 6px; font-size: 0.76rem; font-weight: 700; color: #cbd5e1; }
+    .acc-seg { display: grid; grid-auto-columns: 1fr; grid-auto-flow: column; gap: 4px; margin-bottom: 12px; padding: 4px; border-radius: 14px; background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.08); }
+    .acc-seg button { padding: 9px 4px; border: 0; border-radius: 10px; font-size: 0.72rem; font-weight: 700; color: #94a3b8; background: transparent; transition: color 0.2s ease, background 0.2s ease; }
+    .acc-seg button:hover { color: #ffffff; background: rgba(255, 255, 255, 0.05); }
+    .acc-seg button[aria-checked="true"] { color: #04130a; background: linear-gradient(135deg, #6dff3a, #1fb84a); box-shadow: 0 4px 14px -4px rgba(83, 252, 24, 0.6); }
+
+    .acc-panel :is(.acc-profile, .acc-tile, .acc-seg button, .acc-step-btn, .acc-x, .acc-reset):focus-visible { outline: 2px solid #53fc18; outline-offset: 2px; }
+
+    .acc-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 16px; border-top: 1px solid rgba(255, 255, 255, 0.06); background: rgba(0, 0, 0, 0.2); }
+    .acc-reset { display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 12px; font-size: 0.8rem; font-weight: 800; color: #fca5a5; background: rgba(239, 68, 68, 0.08); border: 1px solid rgba(239, 68, 68, 0.3); transition: background 0.2s ease, color 0.2s ease; }
+    .acc-reset:hover { color: #ffffff; background: rgba(239, 68, 68, 0.18); }
+    .acc-reset svg { width: 16px; height: 16px; }
+    .acc-note { font-size: 0.68rem; color: #64748b; }
+
+    @media (max-width: 640px) {
+      .acc-fab { right: 14px; bottom: 14px; width: 50px; height: 50px; border-radius: 16px; }
+      .acc-panel { top: auto; right: 0; bottom: 0; left: 0; width: 100%; max-height: 86vh; border-radius: 24px 24px 0 0; transform: translateY(100%); }
+      .acc-panel.open { transform: none; }
+      .acc-panel::before { content: ""; position: absolute; top: 7px; left: 50%; width: 42px; height: 4px; margin-left: -21px; border-radius: 4px; background: rgba(255, 255, 255, 0.2); }
+    }
 
     /* ===== אינטרו כניסה (~5 שניות) =====
        0.0s קרן אור נפתחת • 0.5s הלוגו נוחת • 1.05s גל הדף + ניצוצות
@@ -906,6 +967,16 @@
     .card-discord { background: linear-gradient(135deg, rgba(108, 132, 212, 0.1) 0%, var(--card-base) 72%); border-color: rgba(108, 132, 212, 0.26); }
     .card-discord .link-icon { background: rgba(108, 132, 212, 0.13); border-color: rgba(108, 132, 212, 0.28); color: #7289da; }
     .card-discord:hover { border-color: rgba(108, 132, 212, 0.58); box-shadow: 0 14px 30px -5px rgba(0, 0, 0, 0.75), 0 0 22px rgba(108, 132, 212, 0.2); }
+
+    /* ===== תשלום ב-Bit (בחלונות החבילות ובכרטיסים בחנות) ===== */
+    .bit-logo { display: block; flex-shrink: 0; width: 40px; height: 40px; border-radius: 11px; box-shadow: 0 6px 16px -6px rgba(52, 216, 227, 0.55); }
+    .sm-pay { order: 3; display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 16px; text-align: right; background: linear-gradient(135deg, rgba(52, 216, 227, 0.1), rgba(3, 58, 64, 0.25)); border: 1px solid rgba(52, 216, 227, 0.3); }
+    .sm-pay-text { display: flex; flex-direction: column; gap: 2px; }
+    .sm-pay-text strong { font-size: 0.86rem; font-weight: 800; color: #e6fdff; }
+    .sm-pay-text span { font-size: 0.72rem; color: #8fb9bd; }
+    .shop-modal-overlay.open .sm-pay { animation: smRise 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.17s both; }
+    .pc-pay { display: inline-flex; align-items: center; gap: 6px; margin-top: 3px; font-size: 0.7rem; font-weight: 700; color: #7fe6ee; }
+    .pc-pay .bit-logo { width: 20px; height: 20px; border-radius: 6px; box-shadow: none; }
 
     /* ===== שדרוג מסך הבית: מראה + אנימציות ===== */
 
@@ -1286,7 +1357,7 @@
     .shop-profile { margin-bottom: 18px; }
     .shop-profile .avatar-wrapper { width: 70px; height: 70px; margin-bottom: 10px; }
     .container:has(#shop-view.active-view) .footer { margin-top: 22px; }
-    .shop-profile h1 { font-size: calc(1.9rem * var(--font-scale)) !important; margin-bottom: 4px; }
+    .shop-profile h1 { font-size:  !important; margin-bottom: 4px; }
     .shop-profile .official-subtitle { margin-bottom: 8px; }
 
     .shop-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; width: 100%; }
@@ -1408,7 +1479,7 @@
       .header-divider { margin-bottom: 12px; }
       .profile { margin-bottom: 14px; }
       .avatar-wrapper { width: 76px; height: 76px; margin-bottom: 8px; }
-      h1 { font-size: calc(1.8rem * var(--font-scale)) !important; }
+      h1 { font-size:  !important; }
       .official-subtitle { margin-bottom: 8px; }
       .stream-title-box { padding: 9px 14px; font-size: 0.84rem; margin-bottom: 8px; }
       .live-status { margin-top: 8px; padding: 6px 18px; }
@@ -1418,8 +1489,8 @@
       .link-icon svg { width: 18px; height: 18px; }
       .card-kick .link-icon svg { width: 24px; }
       .link-text-group { padding: 0 6px; gap: 2px; }
-      .link-title { font-size: calc(0.86rem * var(--font-scale)) !important; }
-      .link-subtitle { font-size: calc(0.68rem * var(--font-scale)) !important; line-height: 1.35; }
+      .link-title { font-size:  !important; }
+      .link-subtitle { font-size:  !important; line-height: 1.35; }
       .shop-grid, .shop-steps { grid-template-columns: 1fr; }
       .footer { margin-top: 14px !important; }
     }
@@ -1429,45 +1500,106 @@
 </head>
 <body>
 
-  <div id="readingRuler"></div>
+  <script>
+    // הגדרות נגישות שמורות מוחלות מיד, עוד לפני שהאתר מוצג (בלי הבהוב)
+    window.accApplyBase = function (s) {
+      var b = document.body;
+      document.documentElement.style.setProperty('--font-scale', s.fontScale || 1);
+      var flags = {
+        'acc-line-height': s.lineHeight, 'acc-letter-spacing': s.letterSpacing, 'acc-readable-font': s.readableFont,
+        'pause-motion': s.pauseMotion, 'acc-highlight-links': s.highlightLinks, 'acc-big-cursor': s.bigCursor,
+        'acc-strong-focus': s.strongFocus, 'acc-reading-guide': s.readingGuide, 'acc-reading-mask': s.readingMask,
+        'acc-contrast-high': s.contrast === 'high', 'acc-contrast-light': s.contrast === 'light', 'acc-contrast-mono': s.contrast === 'mono',
+        'acc-sat-low': s.saturation === 'low', 'acc-sat-high': s.saturation === 'high'
+      };
+      for (var k in flags) b.classList.toggle(k, !!flags[k]);
+    };
+    try { var accSaved = JSON.parse(localStorage.getItem('acc-settings') || 'null'); if (accSaved) window.accApplyBase(accSaved); } catch (e) {}
+  </script>
 
-  <button class="accessibility-btn" id="accToggleBtn" aria-label="פתח תפריט נגישות">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-      <circle cx="12" cy="4" r="2"></circle>
-      <path d="M19 13v-2c-1.5 0-3-.5-4-1.5L13 7h-2l-2 2.5C8 10.5 6.5 11 5 11v2c2 0 3.5-.5 4.5-1.5L11 11v8h2v-6l1.5 2c1 1 2.5 1.5 4.5 1.5z"></path>
-    </svg>
+  <div id="readingRuler" aria-hidden="true"></div>
+  <div class="reading-mask" id="readingMaskTop" aria-hidden="true"></div>
+  <div class="reading-mask" id="readingMaskBottom" aria-hidden="true"></div>
+
+  <!-- כפתור ולוח הנגישות -->
+  <button class="acc-fab" id="accToggleBtn" type="button" aria-label="פתיחת תפריט הנגישות" aria-expanded="false" aria-controls="accPanel">
+    <svg class="ico"><use href="#i-access"/></svg>
+    <span class="acc-fab-dot" aria-hidden="true"></span>
   </button>
+  <div class="acc-backdrop" id="accBackdrop"></div>
+  <aside class="acc-panel" id="accPanel" role="dialog" aria-labelledby="accTitle" aria-hidden="true">
+    <header class="acc-head">
+      <div class="acc-head-icon"><svg class="ico"><use href="#i-access"/></svg></div>
+      <div>
+        <h2 id="accTitle">נגישות</h2>
+        <p>התאימו את האתר בדיוק בשבילכם</p>
+      </div>
+      <button class="acc-x" id="accCloseBtn" type="button" aria-label="סגירת תפריט הנגישות"><svg class="ico"><use href="#i-close"/></svg></button>
+    </header>
 
-  <div class="accessibility-modal" id="accModal">
-    <div class="acc-header">
-      <h2>נגישות // Accessibility</h2>
-      <button class="acc-close" id="accCloseBtn">✕</button>
+    <div class="acc-scroll">
+      <section>
+        <h3 class="acc-sec-title">פרופילים מהירים</h3>
+        <div class="acc-profiles">
+          <button class="acc-profile" type="button" data-profile="vision" aria-pressed="false"><span class="acc-pi"><svg class="ico"><use href="#i-eye"/></svg></span><b>לקויות ראייה</b><small>טקסט גדול, ניגודיות וקישורים בולטים</small></button>
+          <button class="acc-profile" type="button" data-profile="motion" aria-pressed="false"><span class="acc-pi"><svg class="ico"><use href="#i-pause"/></svg></span><b>רגישות לתנועה</b><small>עוצר את כל האנימציות באתר</small></button>
+          <button class="acc-profile" type="button" data-profile="reading" aria-pressed="false"><span class="acc-pi"><svg class="ico"><use href="#i-book"/></svg></span><b>קריאה נוחה</b><small>גופן קריא, ריווח וסרגל קריאה</small></button>
+          <button class="acc-profile" type="button" data-profile="keyboard" aria-pressed="false"><span class="acc-pi"><svg class="ico"><use href="#i-keyboard"/></svg></span><b>ניווט במקלדת</b><small>מיקוד בולט וקישורים מודגשים</small></button>
+        </div>
+      </section>
+
+      <section>
+        <h3 class="acc-sec-title">טקסט</h3>
+        <div class="acc-stepper">
+          <span class="acc-stepper-label"><svg class="ico"><use href="#i-text-size"/></svg>גודל טקסט</span>
+          <div class="acc-step-ctrl">
+            <button class="acc-step-btn" id="accFontDown" type="button" aria-label="הקטנת טקסט">−</button>
+            <span class="acc-step-val" id="accFontVal" aria-live="polite">100%</span>
+            <button class="acc-step-btn" id="accFontUp" type="button" aria-label="הגדלת טקסט">+</button>
+          </div>
+        </div>
+        <div class="acc-tiles">
+          <button class="acc-tile" type="button" data-acc-toggle="lineHeight" aria-pressed="false"><svg class="ico"><use href="#i-line-height"/></svg>ריווח שורות</button>
+          <button class="acc-tile" type="button" data-acc-toggle="letterSpacing" aria-pressed="false"><svg class="ico"><use href="#i-letter-spacing"/></svg>ריווח אותיות</button>
+          <button class="acc-tile" type="button" data-acc-toggle="readableFont" aria-pressed="false"><svg class="ico"><use href="#i-font"/></svg>גופן קריא</button>
+        </div>
+      </section>
+
+      <section>
+        <h3 class="acc-sec-title">צבעים וניגודיות</h3>
+        <span class="acc-seg-label" id="accContrastLabel">מצב תצוגה</span>
+        <div class="acc-seg" role="radiogroup" aria-labelledby="accContrastLabel" data-acc-choice="contrast">
+          <button type="button" role="radio" data-value="normal" aria-checked="true">רגיל</button>
+          <button type="button" role="radio" data-value="high" aria-checked="false">ניגודיות גבוהה</button>
+          <button type="button" role="radio" data-value="light" aria-checked="false">מצב בהיר</button>
+          <button type="button" role="radio" data-value="mono" aria-checked="false">שחור-לבן</button>
+        </div>
+        <span class="acc-seg-label" id="accSatLabel">רוויית צבעים</span>
+        <div class="acc-seg" role="radiogroup" aria-labelledby="accSatLabel" data-acc-choice="saturation">
+          <button type="button" role="radio" data-value="normal" aria-checked="true">רגילה</button>
+          <button type="button" role="radio" data-value="low" aria-checked="false">נמוכה</button>
+          <button type="button" role="radio" data-value="high" aria-checked="false">גבוהה</button>
+        </div>
+      </section>
+
+      <section>
+        <h3 class="acc-sec-title">ניווט וקריאה</h3>
+        <div class="acc-tiles">
+          <button class="acc-tile" type="button" data-acc-toggle="pauseMotion" aria-pressed="false"><svg class="ico"><use href="#i-pause"/></svg>עצירת אנימציות</button>
+          <button class="acc-tile" type="button" data-acc-toggle="highlightLinks" aria-pressed="false"><svg class="ico"><use href="#i-link"/></svg>הדגשת קישורים</button>
+          <button class="acc-tile" type="button" data-acc-toggle="bigCursor" aria-pressed="false"><svg class="ico"><use href="#i-cursor"/></svg>סמן גדול</button>
+          <button class="acc-tile" type="button" data-acc-toggle="readingGuide" aria-pressed="false"><svg class="ico"><use href="#i-guide"/></svg>סרגל קריאה</button>
+          <button class="acc-tile" type="button" data-acc-toggle="readingMask" aria-pressed="false"><svg class="ico"><use href="#i-mask"/></svg>מסכת קריאה</button>
+          <button class="acc-tile" type="button" data-acc-toggle="strongFocus" aria-pressed="false"><svg class="ico"><use href="#i-focus"/></svg>מיקוד בולט</button>
+        </div>
+      </section>
     </div>
-    <p class="acc-sub">כלים להתאמה אישית של חווית הגלישה באתר</p>
-    <div class="acc-body">
-      <div class="acc-control-group">
-        <div class="acc-control-label"><span>גודל טקסט (Font size)</span><span id="fontSizeVal">100%</span></div>
-        <input type="range" min="85" max="150" value="100" class="acc-slider" id="fontSizeSlider">
-      </div>
-      <div class="acc-control-group">
-        <div class="acc-control-label"><span>בהירות מסך (Brightness)</span><span id="brightnessVal">100%</span></div>
-        <input type="range" min="70" max="130" value="100" class="acc-slider" id="brightnessSlider">
-      </div>
-      <div class="acc-grid-2">
-        <button class="acc-option" data-action="dark-contrast">ניגודיות כהה</button>
-        <button class="acc-option" data-action="light-contrast">ניגודיות בהירה</button>
-        <button class="acc-option" data-action="high-saturation">רוויה גבוהה</button>
-        <button class="acc-option" data-action="grayscale">שחור-לבן</button>
-        <button class="acc-option" data-action="highlight-links">הדגשת קישורים</button>
-        <button class="acc-option" data-action="pause-motion">עצירת אנימציות</button>
-        <button class="acc-option" data-action="focus-mode">מצב מיקוד</button>
-        <button class="acc-option" data-action="line-height">ריווח שורות</button>
-        <button class="acc-option" data-action="text-spacing">ריווח אותיות</button>
-        <button class="acc-option" data-action="reading-ruler">סרגל קריאה</button>
-      </div>
-      <button class="acc-reset-btn" id="accResetBtn">איפוס הגדרות נגישות</button>
-    </div>
-  </div>
+
+    <footer class="acc-foot">
+      <button class="acc-reset" id="accResetBtn" type="button"><svg class="ico"><use href="#i-reset"/></svg>איפוס הכל</button>
+      <span class="acc-note">ההגדרות נשמרות במכשיר שלכם</span>
+    </footer>
+  </aside>
 
   <!-- אינטרו כניסה (מופיע פעם אחת בכל ביקור) -->
   <div id="intro-screen">
@@ -1537,6 +1669,20 @@
       <symbol id="i-external" viewBox="0 0 24 24"><path d="M15 3h6v6M10 14 21 3M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></symbol>
       <symbol id="i-arrow-ul" viewBox="0 0 24 24"><path d="M17 17 7 7M7 17V7h10"/></symbol>
       <symbol id="i-flame" viewBox="0 0 24 24"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.07-2.14-.22-4.05 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.15.43-2.29 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></symbol>
+      <symbol id="i-access" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="6.8" r="1.4" fill="currentColor" stroke="none"/><path d="M6.8 9.6 12 10.6l5.2-1M12 10.6v3.6l-2.6 4.4M12 14.2l2.6 4.4"/></symbol>
+      <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></symbol>
+      <symbol id="i-book" viewBox="0 0 24 24"><path d="M2 4h6a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H2zM22 4h-6a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h7z"/></symbol>
+      <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10"/></symbol>
+      <symbol id="i-text-size" viewBox="0 0 24 24"><path d="M3 7V5h11v2M8.5 5v14M6.5 19h4M14 13v-1.5h7V13M17.5 11.5V19M16 19h3"/></symbol>
+      <symbol id="i-line-height" viewBox="0 0 24 24"><path d="M3 6h11M3 12h11M3 18h11M19 4v16M17 6l2-2 2 2M17 18l2 2 2-2"/></symbol>
+      <symbol id="i-letter-spacing" viewBox="0 0 24 24"><path d="m4 15 3-9 3 9M5 12h4M14 15l3-9 3 9M15 12h4M3 20h18M6 18l-2 2 2 2M18 18l2 2-2 2"/></symbol>
+      <symbol id="i-font" viewBox="0 0 24 24"><path d="m4 20 7-16h2l7 16M7.5 13h9"/></symbol>
+      <symbol id="i-cursor" viewBox="0 0 24 24"><path d="M5 3l14 8-6 1.5L10 19z"/></symbol>
+      <symbol id="i-guide" viewBox="0 0 24 24"><path d="M3 12h18M3 7h3M9 7h3M15 7h3M3 17h3M9 17h3M15 17h3"/></symbol>
+      <symbol id="i-mask" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 9h20M2 15h20"/></symbol>
+      <symbol id="i-focus" viewBox="0 0 24 24"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-reset" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></symbol>
+      <symbol id="i-bit" viewBox="0 0 48 48"><rect width="48" height="48" rx="12" fill="#033a40"/><text x="24" y="31" text-anchor="middle" direction="ltr" font-family="'Arial Rounded MT Bold','Nunito','Heebo',Arial,sans-serif" font-weight="800" font-size="20" fill="#34d8e3">bit</text></symbol>
       <symbol id="i-crown" viewBox="0 0 24 24"><path d="M3 18h18l1.5-11-5.5 4.5L12 4l-5 7.5L1.5 7z"/></symbol>
       <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></symbol>
       <symbol id="i-discord" viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189Z"/></symbol>
@@ -1586,6 +1732,11 @@
             </div>
           </div>
 
+          <div class="sm-pay">
+            <svg class="bit-logo" aria-hidden="true"><use href="#i-bit"/></svg>
+            <div class="sm-pay-text"><strong>התשלום מתבצע דרך Bit</strong><span>העברה מהירה ישירות מאפליקציית ביט</span></div>
+          </div>
+
           <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="buy-btn"><svg class="ico-fill"><use href="#i-discord"/></svg><span>רכישה / הזמנה</span></a>
           <p class="sm-footnote">ההזמנה מתבצעת דרך שרת הדיסקורד</p>
         </div>
@@ -1631,6 +1782,11 @@
               <span class="sm-amount">99<small>₪</small></span>
               <span class="sm-price-label">תשלום חד פעמי</span>
             </div>
+          </div>
+
+          <div class="sm-pay">
+            <svg class="bit-logo" aria-hidden="true"><use href="#i-bit"/></svg>
+            <div class="sm-pay-text"><strong>התשלום מתבצע דרך Bit</strong><span>העברה מהירה ישירות מאפליקציית ביט</span></div>
           </div>
 
           <a href="https://discord.gg/c8ftgaSbxX" target="_blank" class="buy-btn"><svg class="ico-fill"><use href="#i-discord"/></svg><span>רכישה / הזמנה</span></a>
@@ -1818,6 +1974,7 @@
             <div class="pc-price">
               <span class="pc-amount">99<small>₪</small></span>
               <span class="pc-price-note">תשלום חד פעמי</span>
+              <span class="pc-pay"><svg class="bit-logo" aria-hidden="true"><use href="#i-bit"/></svg>תשלום ב-Bit</span>
             </div>
             <span class="pc-cta">לפרטים והזמנה<svg class="ico"><use href="#i-arrow"/></svg></span>
           </div>
@@ -1842,6 +1999,7 @@
             <div class="pc-price">
               <span class="pc-amount">55<small>₪</small></span>
               <span class="pc-price-note">ואז 10 ₪ בחודש</span>
+              <span class="pc-pay"><svg class="bit-logo" aria-hidden="true"><use href="#i-bit"/></svg>תשלום ב-Bit</span>
             </div>
             <span class="pc-cta">לפרטים והזמנה<svg class="ico"><use href="#i-arrow"/></svg></span>
           </div>
@@ -1856,7 +2014,7 @@
         </div>
         <div class="shop-step">
           <span class="step-num">2</span>
-          <span class="step-text"><strong>מזמינים בדיסקורד</strong><span>דרך כפתור ההזמנה בחלון</span></span>
+          <span class="step-text"><strong>מזמינים בדיסקורד</strong><span>ומשלמים בקלות ב-Bit</span></span>
         </div>
         <div class="shop-step">
           <span class="step-num">3</span>
@@ -1972,73 +2130,111 @@
       if (e.key === 'Escape') shopModals.forEach(modal => closeShopModal(modal));
     });
 
-    const accToggleBtn = document.getElementById('accToggleBtn');
-    const accModal = document.getElementById('accModal');
-    const accCloseBtn = document.getElementById('accCloseBtn');
-    const accResetBtn = document.getElementById('accResetBtn');
+    // ===== תפריט נגישות: הגדרות נשמרות ב-localStorage ומוחלות דרך accApplyBase =====
+    const ACC_KEY = 'acc-settings';
+    const ACC_DEFAULTS = {
+      fontScale: 1, lineHeight: false, letterSpacing: false, readableFont: false,
+      contrast: 'normal', saturation: 'normal',
+      pauseMotion: false, highlightLinks: false, bigCursor: false, readingGuide: false, readingMask: false, strongFocus: false
+    };
+    const FONT_STEPS = [0.9, 1, 1.1, 1.2, 1.3, 1.45, 1.6];
+    const ACC_PROFILES = {
+      vision: { fontScale: 1.3, contrast: 'high', highlightLinks: true, bigCursor: true },
+      motion: { pauseMotion: true },
+      reading: { readableFont: true, letterSpacing: true, lineHeight: true, readingGuide: true },
+      keyboard: { strongFocus: true, highlightLinks: true }
+    };
 
-    accToggleBtn.addEventListener('click', () => accModal.classList.toggle('open'));
-    accCloseBtn.addEventListener('click', () => accModal.classList.remove('open'));
+    const acc = Object.assign({}, ACC_DEFAULTS);
+    try { Object.assign(acc, JSON.parse(localStorage.getItem(ACC_KEY) || '{}')); } catch (e) {}
+    if (!FONT_STEPS.includes(acc.fontScale)) acc.fontScale = 1;
 
-    const fontSizeSlider = document.getElementById('fontSizeSlider');
-    const fontSizeVal = document.getElementById('fontSizeVal');
-    fontSizeSlider.addEventListener('input', (e) => {
-      fontSizeVal.textContent = e.target.value + '%';
-      document.documentElement.style.setProperty('--font-scale', e.target.value / 100);
+    const accPanel = document.getElementById('accPanel');
+    const accFab = document.getElementById('accToggleBtn');
+    const accBackdrop = document.getElementById('accBackdrop');
+    const accFontDown = document.getElementById('accFontDown');
+    const accFontUp = document.getElementById('accFontUp');
+
+    function renderAcc() {
+      window.accApplyBase(acc);
+      accPanel.querySelectorAll('[data-acc-toggle]').forEach(btn => btn.setAttribute('aria-pressed', String(!!acc[btn.dataset.accToggle])));
+      accPanel.querySelectorAll('[data-acc-choice]').forEach(group => {
+        group.querySelectorAll('button').forEach(b => b.setAttribute('aria-checked', String(acc[group.dataset.accChoice] === b.dataset.value)));
+      });
+      accPanel.querySelectorAll('[data-profile]').forEach(btn => {
+        const p = ACC_PROFILES[btn.dataset.profile];
+        btn.setAttribute('aria-pressed', String(Object.keys(p).every(k => acc[k] === p[k])));
+      });
+      const i = FONT_STEPS.indexOf(acc.fontScale);
+      document.getElementById('accFontVal').textContent = Math.round(acc.fontScale * 100) + '%';
+      accFontDown.disabled = i <= 0;
+      accFontUp.disabled = i >= FONT_STEPS.length - 1;
+      accFab.classList.toggle('has-settings', Object.keys(ACC_DEFAULTS).some(k => acc[k] !== ACC_DEFAULTS[k]));
+    }
+
+    function updateAcc(changes) {
+      Object.assign(acc, changes);
+      try { localStorage.setItem(ACC_KEY, JSON.stringify(acc)); } catch (e) {}
+      renderAcc();
+      fitActiveView();
+    }
+
+    accPanel.querySelectorAll('[data-acc-toggle]').forEach(btn => {
+      btn.addEventListener('click', () => updateAcc({ [btn.dataset.accToggle]: !acc[btn.dataset.accToggle] }));
     });
-
-    const brightnessSlider = document.getElementById('brightnessSlider');
-    const brightnessVal = document.getElementById('brightnessVal');
-    brightnessSlider.addEventListener('input', (e) => {
-      brightnessVal.textContent = e.target.value + '%';
-      document.documentElement.style.setProperty('--brightness-val', e.target.value / 100);
+    accPanel.querySelectorAll('[data-acc-choice]').forEach(group => {
+      group.querySelectorAll('button').forEach(b => b.addEventListener('click', () => updateAcc({ [group.dataset.accChoice]: b.dataset.value })));
     });
-
-    const options = document.querySelectorAll('.acc-option');
-    options.forEach(btn => {
+    accPanel.querySelectorAll('[data-profile]').forEach(btn => {
       btn.addEventListener('click', () => {
-        const action = btn.getAttribute('data-action');
-        if (action === 'dark-contrast') { document.body.classList.toggle('high-contrast-dark'); document.body.classList.remove('high-contrast-light'); btn.classList.toggle('active'); }
-        else if (action === 'light-contrast') { document.body.classList.toggle('high-contrast-light'); document.body.classList.remove('high-contrast-dark'); btn.classList.toggle('active'); }
-        else if (action === 'high-saturation') { document.body.classList.toggle('high-saturation'); btn.classList.toggle('active'); }
-        else if (action === 'grayscale') { document.body.classList.toggle('grayscale'); btn.classList.toggle('active'); }
-        else if (action === 'highlight-links') { document.body.classList.toggle('highlight-links'); btn.classList.toggle('active'); }
-        else if (action === 'pause-motion') { document.body.classList.toggle('pause-motion'); btn.classList.toggle('active'); }
-        else if (action === 'focus-mode') { document.body.classList.toggle('focus-mode'); btn.classList.toggle('active'); }
-        else if (action === 'line-height') {
-          const current = document.documentElement.style.getPropertyValue('--line-height-val');
-          if (!current || current === 'normal') { document.documentElement.style.setProperty('--line-height-val', '1.9'); btn.classList.add('active'); }
-          else { document.documentElement.style.setProperty('--line-height-val', 'normal'); btn.classList.remove('active'); }
-        }
-        else if (action === 'text-spacing') {
-          const current = document.documentElement.style.getPropertyValue('--letter-spacing-val');
-          if (!current || current === 'normal') { document.documentElement.style.setProperty('--letter-spacing-val', '2px'); btn.classList.add('active'); }
-          else { document.documentElement.style.setProperty('--letter-spacing-val', 'normal'); btn.classList.remove('active'); }
-        }
-        else if (action === 'reading-ruler') {
-          const ruler = document.getElementById('readingRuler');
-          if (ruler.style.display === 'block') { ruler.style.display = 'none'; btn.classList.remove('active'); }
-          else { ruler.style.display = 'block'; btn.classList.add('active'); }
-        }
+        const p = ACC_PROFILES[btn.dataset.profile];
+        const isOn = Object.keys(p).every(k => acc[k] === p[k]);
+        const changes = {};
+        Object.keys(p).forEach(k => { changes[k] = isOn ? ACC_DEFAULTS[k] : p[k]; });
+        updateAcc(changes);
       });
     });
+    accFontDown.addEventListener('click', () => { const i = FONT_STEPS.indexOf(acc.fontScale); if (i > 0) updateAcc({ fontScale: FONT_STEPS[i - 1] }); });
+    accFontUp.addEventListener('click', () => { const i = FONT_STEPS.indexOf(acc.fontScale); if (i < FONT_STEPS.length - 1) updateAcc({ fontScale: FONT_STEPS[i + 1] }); });
+    document.getElementById('accResetBtn').addEventListener('click', () => updateAcc(Object.assign({}, ACC_DEFAULTS)));
 
-    window.addEventListener('mousemove', (e) => {
-      const ruler = document.getElementById('readingRuler');
-      if (ruler.style.display === 'block') ruler.style.top = (e.clientY - 20) + 'px';
-    });
+    // פתיחה וסגירה
+    let accLastFocus = null;
+    function openAcc() {
+      accLastFocus = document.activeElement;
+      accPanel.classList.add('open');
+      accBackdrop.classList.add('open');
+      accPanel.setAttribute('aria-hidden', 'false');
+      accFab.setAttribute('aria-expanded', 'true');
+      setTimeout(() => document.getElementById('accCloseBtn').focus({ preventScroll: true }), 80);
+    }
+    function closeAcc() {
+      if (!accPanel.classList.contains('open')) return;
+      accPanel.classList.remove('open');
+      accBackdrop.classList.remove('open');
+      accPanel.setAttribute('aria-hidden', 'true');
+      accFab.setAttribute('aria-expanded', 'false');
+      if (accLastFocus && typeof accLastFocus.focus === 'function') accLastFocus.focus({ preventScroll: true });
+    }
+    accFab.addEventListener('click', () => (accPanel.classList.contains('open') ? closeAcc() : openAcc()));
+    document.getElementById('accCloseBtn').addEventListener('click', closeAcc);
+    accBackdrop.addEventListener('click', closeAcc);
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeAcc(); });
 
-    accResetBtn.addEventListener('click', () => {
-      document.body.className = '';
-      document.documentElement.style.setProperty('--font-scale', '1');
-      document.documentElement.style.setProperty('--brightness-val', '1');
-      document.documentElement.style.setProperty('--line-height-val', 'normal');
-      document.documentElement.style.setProperty('--letter-spacing-val', 'normal');
-      fontSizeSlider.value = 100; fontSizeVal.textContent = '100%';
-      brightnessSlider.value = 100; brightnessVal.textContent = '100%';
-      document.getElementById('readingRuler').style.display = 'none';
-      options.forEach(b => b.classList.remove('active'));
-    });
+    // סרגל ומסכת קריאה עוקבים אחרי העכבר / האצבע
+    const readingRuler = document.getElementById('readingRuler');
+    const readingMaskTop = document.getElementById('readingMaskTop');
+    const readingMaskBottom = document.getElementById('readingMaskBottom');
+    function moveReading(y) {
+      readingRuler.style.transform = 'translateY(' + (y - 17) + 'px)';
+      readingMaskTop.style.height = Math.max(0, y - 60) + 'px';
+      readingMaskBottom.style.height = Math.max(0, window.innerHeight - y - 60) + 'px';
+    }
+    moveReading(window.innerHeight / 2);
+    window.addEventListener('mousemove', (e) => { if (acc.readingGuide || acc.readingMask) moveReading(e.clientY); });
+    window.addEventListener('touchmove', (e) => { if ((acc.readingGuide || acc.readingMask) && e.touches[0]) moveReading(e.touches[0].clientY); }, { passive: true });
+
+    renderAcc();
 
     // ===== אינטרו כניסה: מופיע פעם אחת בכל ביקור =====
     (function runIntro() {
@@ -2595,8 +2791,6 @@
     window.addEventListener('resize', fitActiveView);
     window.addEventListener('load', fitActiveView);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitActiveView);
-    fontSizeSlider.addEventListener('input', fitActiveView);
-    accResetBtn.addEventListener('click', fitActiveView);
     fitActiveView();
 
     const glow = document.getElementById('mouseGlow');
