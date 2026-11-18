@@ -1870,8 +1870,8 @@
       <section class="hof">
         <header class="hof-head" data-enter style="--d: 0">
           <div class="hof-title-wrap">
-            <span class="hof-kicker"><svg class="ico"><use href="#i-flame"/></svg>TWITCH HALL OF FAME</span>
-            <h2 class="hof-title">היכל הקליפים</h2>
+            <span class="hof-kicker"><svg class="ico"><use href="#i-flame"/></svg>FISHY BEST CLIPS</span>
+            <h2 class="hof-title">קליפים מובילים של פישי</h2>
             <p class="hof-sub">הרגעים הכי נצפים מהלייבים של פישי בטוויץ'. לחצו על קליפ כדי לצפות בו כאן.</p>
           </div>
           <div class="hof-stats" id="hofStats"></div>
@@ -2472,7 +2472,7 @@
       const games = {};
       clips.forEach(c => { if (c.game) games[c.game] = (games[c.game] || 0) + 1; });
       const topGame = Object.keys(games).sort((a, b) => games[b] - games[a])[0] || '-';
-      [[formatViews(total), 'צפיות בהיכל', 'is-hot'], [String(clips.length), 'קליפים', ''], [topGame, 'הקטגוריה המובילה', 'is-text']].forEach(([value, label, cls]) => {
+      [[formatViews(total), 'צפיות בסך הכל', 'is-hot'], [String(clips.length), 'קליפים', ''], [topGame, 'הקטגוריה המובילה', 'is-text']].forEach(([value, label, cls]) => {
         const stat = el('div', 'hof-stat ' + cls);
         stat.append(el('b', null, value), el('span', null, label));
         hofStats.appendChild(stat);
